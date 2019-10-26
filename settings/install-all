@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+echo "################################################################################"
+for d in $(ls);do
+    if [ -d $d ];then
+        pushd $d >/dev/null
+        echo; echo "### $d"
+        bash install
+        popd >/dev/null
+    fi
+done

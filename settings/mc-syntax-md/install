@@ -1,0 +1,12 @@
+d=~/.local/share/mc/syntax; f=
+mkdir -p $d
+cp markdown.syntax $d/markdown.syntax
+
+
+d=~/.config/mc/mcedit; f=$d/Syntax
+if [[ ! -f $f ]] || [[ "$(grep markdown $f | wc -w)" == "0" ]];then
+    mkdir -p $d
+    echo                                                                  >>$f
+    echo "    file ..\\*\\\\.(md|markdown|txt|text)\$ Markdown"           >>$f
+    echo "    include /home/$USER/.local/share/mc/syntax/markdown.syntax" >>$f
+fi
