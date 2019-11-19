@@ -1,0 +1,6 @@
+<?xml version="1.0" standalone="yes"?><kml xmlns="http://earth.google.com/kml/2.2">
+        <Document><name>1.fit</name><visibility>1</visibility><open>1</open><Folder id="Tracks"><name>Tracks</name><visibility>1</visibility><open>0</open><Placemark>
+        <name>1.fit</name><Snippet></Snippet><Style><LineStyle><color>FF0000FF</color><width>2</width></LineStyle></Style>
+        <MultiGeometry><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>
+        
+</coordinates></LineString></MultiGeometry></Placemark></Folder></Document></kml>

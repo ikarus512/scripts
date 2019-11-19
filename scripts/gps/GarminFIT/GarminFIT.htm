@@ -1,0 +1,848 @@
+<HTML>
+<HEAD>
+<TITLE>Garmin::FIT - A Perl class to decode Garmin .FIT files</TITLE>
+<LINK REV="made" HREF="mailto:kojima@linet.gr.jp">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<UL>
+
+		<LI><A HREF="#constants">Constants</A></LI>
+		<LI><A HREF="#class methods">Class methods</A></LI>
+		<LI><A HREF="#object methods">Object methods</A></LI>
+		<LI><A HREF="#data message descriptor">Data message descriptor</A></LI>
+		<LI><A HREF="#callback function">Callback function</A></LI>
+	</UL>
+
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#disclaimer etc.">DISCLAIMER etc.</A></LI>
+	<LI><A HREF="#acknowledgement">ACKNOWLEDGEMENT</A></LI>
+	<LI><A HREF="#changes">CHANGES</A></LI>
+	<UL>
+
+		<LI><A HREF="#0.10 > 0.11">0.10 -&gt; 0.11</A></LI>
+		<LI><A HREF="#0.09 > 0.10">0.09 -&gt; 0.10</A></LI>
+		<LI><A HREF="#0.08 > 0.09">0.08 -&gt; 0.09</A></LI>
+		<LI><A HREF="#0.07 > 0.08">0.07 -&gt; 0.08</A></LI>
+		<LI><A HREF="#0.06 > 0.07">0.06 -&gt; 0.07</A></LI>
+		<LI><A HREF="#0.05 > 0.06">0.05 -&gt; 0.06</A></LI>
+		<LI><A HREF="#0.04 > 0.05">0.04 -&gt; 0.05</A></LI>
+		<LI><A HREF="#0.03 > 0.04">0.03 -&gt; 0.04</A></LI>
+		<LI><A HREF="#0.02 > 0.03">0.02 -&gt; 0.03</A></LI>
+		<LI><A HREF="#0.01 > 0.02">0.01 -&gt; 0.02</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Garmin::FIT - A Perl class to decode Garmin .FIT files</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Garmin::FIT;
+  Garmin::FIT-&gt;version_string;
+  $fit = new Garmin::FIT;
+  $fit-&gt;unit_table(&lt;unit&gt; =&gt; &lt;unit conversion table&gt;);
+  $fit-&gt;semicircles_to_degree(&lt;boolean&gt;);
+  $fit-&gt;mps_to_kph(&lt;boolean&gt;);
+  $fit-&gt;use_gmtime(&lt;boolean&gt;);
+  $fit-&gt;file(&lt;file name&gt;)
+  $fit-&gt;open;
+  $fit-&gt;fetch_header;
+  $fit-&gt;fetch;
+  $fit-&gt;protocol_version_string;
+  $fit-&gt;protocol_version_string(&lt;version number&gt;);
+  $fit-&gt;profile_version_string;
+  $fit-&gt;profile_version_string(&lt;version number&gt;);
+  $fit-&gt;data_message_callback_by_name(&lt;message name&gt;, &lt;callback function&gt;[, &lt;callback data&gt;, ...]);
+  $fit-&gt;data_message_callback_by_num(&lt;message number&gt;, &lt;callback function&gt;[, &lt;callback data&gt;, ...]);
+  $fit-&gt;switched(&lt;data message descriptor&gt;, &lt;array of values&gt;, &lt;data type table&gt;);
+  $fit-&gt;string_value(&lt;array of values&gt;, &lt;offset in the array&gt;, &lt;counts&gt;);
+  $fit-&gt;value_cooked(&lt;type name&gt;, &lt;field attributes table&gt;, &lt;invalid data&gt;, &lt;value&gt;);
+  $fit-&gt;error;
+  $fit-&gt;crc_expected;
+  $fit-&gt;crc;
+  $fit-&gt;trailing_garbages;
+  $fit-&gt;close;
+  ...</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P><STRONG>Garmin::FIT</STRONG> is a Perl class to provide interfaces to decode Garmin .FIT files.</P>
+The latest version is obtained via<blockquote><a href="/cycling/pub/GarminFIT-0.11.tar.gz">GarminFIT-0.11.tar.gz</a> (21KB, 2012-09-17 13:59:45).</blockquote><P>There are three applications</P>
+<blockquote><a href="fitdump.shtml"><P><CODE>fitdump</CODE>,</P>
+</a></blockquote><blockquote><a href="fitsed.shtml"><P><CODE>fitsed</CODE>,</P>
+</a></blockquote><P>and</P>
+<blockquote><a href="fit2tcx.shtml"><P><CODE>fit2tcx</CODE></P>
+</a></blockquote><P>using this class.</P>
+<P>
+<H2><A NAME="constants">Constants</A></H2>
+<P>Following constants are automatically exported.</P>
+<DL>
+<DT><STRONG><A NAME="item_FIT_ENUM">FIT_ENUM</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_SINT8">FIT_SINT8</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_UINT8">FIT_UINT8</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_SINT16">FIT_SINT16</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_UINT16">FIT_UINT16</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_SINT32">FIT_SINT32</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_UINT32">FIT_UINT32</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_STRING">FIT_STRING</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_FLOAT16">FIT_FLOAT16</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_FLOAT32">FIT_FLOAT32</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_UINT8Z">FIT_UINT8Z</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_UINT16Z">FIT_UINT16Z</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_UINT32Z">FIT_UINT32Z</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_FIT_BYTE">FIT_BYTE</A></STRONG><BR>
+<DD>
+numbers representing types of field values in data messages.
+<P></P>
+<DT><STRONG><A NAME="item_FIT_HEADER_LENGTH">FIT_HEADER_LENGTH</A></STRONG><BR>
+<DD>
+length of a .FIT file header.
+<P></P></DL>
+<P>
+<H2><A NAME="class methods">Class methods</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_version_string">Garmin::FIT-&gt;version_string</A></STRONG><BR>
+<DD>
+returns a string representing the version of this class.
+<P></P>
+<DT><STRONG><A NAME="item_new_Garmin%3A%3AFIT">new Garmin::FIT</A></STRONG><BR>
+<DD>
+creates a new object and returns it.
+<P></P>
+<DT><STRONG><A NAME="item_message_name">Garmin::FIT-&gt;message_name(<EM>&lt;message spec</EM>&gt;)</A></STRONG><BR>
+<DD>
+returns the message name for <EM>&lt;message spec</EM>&gt; or undef.
+<P></P>
+<DT><STRONG><A NAME="item_message_number">Garmin::FIT-&gt;message_number(<EM>&lt;message spec</EM>&gt;)</A></STRONG><BR>
+<DD>
+returns the message number for <EM>&lt;message spec</EM>&gt; or undef.
+<P></P>
+<DT><STRONG><A NAME="item_field_name">Garmin::FIT-&gt;field_name(<EM>&lt;message spec</EM>&gt;, <EM>&lt;field spec</EM>&gt;)</A></STRONG><BR>
+<DD>
+returns the field name for <EM>&lt;field spec</EM>&gt; in <EM>&lt;message spec</EM>&gt; or undef.
+<P></P>
+<DT><STRONG><A NAME="item_field_number">Garmin::FIT-&gt;field_number(<EM>&lt;message spec</EM>&gt;, <EM>&lt;field spec</EM>&gt;)</A></STRONG><BR>
+<DD>
+returns the field index for <EM>&lt;field spec</EM>&gt; in <EM>&lt;message spec</EM>&gt; or undef.
+<P></P>
+<DT><STRONG><A NAME="item_cat_header">Garmin::FIT-&gt;cat_header(<EM>&lt;protocol version</EM>&gt;, <EM>&lt;profile version</EM>&gt;, <EM>&lt;file length</EM>&gt;[, <EM>&lt;refrencne to a scalar</EM>&gt;])</A></STRONG><BR>
+<DD>
+composes the binary form of a .FIT file header,
+concatenates the scalar and it,
+and returns the reference to the scalar.
+If the 4th argument is omitted,
+it returns the reference to the binary form.
+<EM>&lt;file length</EM>&gt; is assumed not to include the file header and trailing CRC.
+<P></P>
+<DT><STRONG><A NAME="item_crc_of_string">Garmin::FIT-&gt;crc_of_string(<EM>&lt;old CRC</EM>&gt;, <EM>&lt;reference to a scalar</EM>&gt;, <EM>&lt;offset in scalar</EM>&gt;, <EM>&lt;counts</EM>&gt;)</A></STRONG><BR>
+<DD>
+calculate CRC-16 of the specified part of the scalar.
+<P></P>
+<DT><STRONG><A NAME="item_my_endian">Garmin::FIT-&gt;my_endian</A></STRONG><BR>
+<DD>
+returns the endian (0 for little endian and 1 for big endian) of the machine on which this program is running.
+<P></P></DL>
+<P>
+<H2><A NAME="object methods">Object methods</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_unit_table"><EM>&lt;object</EM>&gt;-&gt;unit_table(<EM>&lt;unit</EM>&gt; =&gt; <EM>&lt;unit conversion table</EM>&gt;)</A></STRONG><BR>
+<DD>
+sets <EM>&lt;unit conversion table</EM>&gt; for <EM>&lt;unit</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_semicircles_to_degree"><EM>&lt;object</EM>&gt;-&gt;semicircles_to_degree(<EM>&lt;boolean</EM>&gt;)</A></STRONG><BR>
+<DD>
+a wrapper method of <A HREF="#item_unit_table"><CODE>unit_table()</CODE></A> method.
+<P></P>
+<DT><STRONG><A NAME="item_mps_to_kph"><EM>&lt;object</EM>&gt;-&gt;mps_to_kph(<EM>&lt;boolean</EM>&gt;)</A></STRONG><BR>
+<DD>
+ditto.
+<P></P>
+<DT><STRONG><A NAME="item_use_gmtime"><EM>&lt;object</EM>&gt;-&gt;use_gmtime(<EM>&lt;boolean</EM>&gt;)</A></STRONG><BR>
+<DD>
+sets the flag which of GMT or local timezone is used for <CODE>date_time</CODE> type value conversion.
+<P></P>
+<DT><STRONG><A NAME="item_file"><EM>&lt;object</EM>&gt;-&gt;file(<EM>&lt;file name</EM>&gt;)</A></STRONG><BR>
+<DD>
+sets the name <EM>&lt;file name</EM>&gt; of a .FIT file.
+<P></P>
+<DT><STRONG><A NAME="item_open"><EM>&lt;object</EM>&gt;-&gt;open</A></STRONG><BR>
+<DD>
+opens the .FIT file.
+<P></P>
+<DT><STRONG><A NAME="item_fetch_header"><EM>&lt;object</EM>&gt;-&gt;fetch_header</A></STRONG><BR>
+<DD>
+reads .FIT file header, and returns an array of
+the file size (excluding the trailing CRC-16), the protocol version, the profile version,
+extra octets in the header other than documented 4 values, the header CRC-16 recorded in the header,
+and the calculated header CRC-16.
+<P></P>
+<DT><STRONG><A NAME="item_fetch"><EM>&lt;object</EM>&gt;-&gt;fetch</A></STRONG><BR>
+<DD>
+reads a message in the .FIT file, and returns <CODE>1</CODE> on success, or <CODE>undef</CODE> on failure or EOF.
+<P></P>
+<DT><STRONG><A NAME="item_protocol_version_string"><EM>&lt;object</EM>&gt;-&gt;protocol_version_string</A></STRONG><BR>
+<DD>
+returns a string representing the .FIT protocol version on which this class based.
+<P></P>
+<DT><STRONG><EM>&lt;object</EM>&gt;-&gt;protocol_version_string(<EM>&lt;version number</EM>&gt;)</STRONG><BR>
+<DD>
+returns a string representing the .FIT protocol version <EM>&lt;version number</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_profile_version_string"><EM>&lt;object</EM>&gt;-&gt;profile_version_string</A></STRONG><BR>
+<DD>
+returns a string representing the .FIT protocol version on which this class based.
+<P></P>
+<DT><STRONG><EM>&lt;object</EM>&gt;-&gt;profile_version_string(<EM>&lt;version number</EM>&gt;)</STRONG><BR>
+<DD>
+returns a string representing the .FIT profile version <EM>&lt;version number</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_data_message_callback_by_name"><EM>&lt;object</EM>&gt;-&gt;data_message_callback_by_name(<EM>&lt;message name</EM>&gt;, <EM>&lt;callback function</EM>&gt;[, <EM>&lt;callback data</EM>&gt;, ...])</A></STRONG><BR>
+<DD>
+register a function <EM>&lt;callback function</EM>&gt; which is called when a data message with the name <EM>&lt;message name</EM>&gt; is fetched.
+<P></P>
+<DT><STRONG><A NAME="item_data_message_callback_by_num"><EM>&lt;object</EM>&gt;-&gt;data_message_callback_by_num(<EM>&lt;message number</EM>&gt;, <EM>&lt;callback function</EM>&gt;[, <EM>&lt;callback data</EM>&gt;, ...])</A></STRONG><BR>
+<DD>
+register a function <EM>&lt;callback function</EM>&gt; which is called when a data message with the messag number <EM>&lt;message number</EM>&gt; is fetched.
+<P></P>
+<DT><STRONG><A NAME="item_switched"><EM>&lt;object</EM>&gt;-&gt;switched(<EM>&lt;data message descriptor</EM>&gt;, <EM>&lt;array of values</EM>&gt;, <EM>&lt;data type table</EM>&gt;)</A></STRONG><BR>
+<DD>
+returns real data type attributes for a C's union like field.
+<P></P>
+<DT><STRONG><A NAME="item_string_value"><EM>&lt;object</EM>&gt;-&gt;string_value(<EM>&lt;array of values</EM>&gt;, <EM>&lt;offset in the array</EM>&gt;, <EM>&lt;counts</EM>&gt;)</A></STRONG><BR>
+<DD>
+converts an array of character codes to a Perl string.
+<P></P>
+<DT><STRONG><A NAME="item_value_cooked"><EM>&lt;object</EM>&gt;-&gt;value_cooked(<EM>&lt;type name</EM>&gt;, <EM>&lt;field attributes table</EM>&gt;, <EM>&lt;invalid</EM>&gt;, <EM>&lt;value</EM>&gt;)</A></STRONG><BR>
+<DD>
+converts <EM>&lt;value</EM>&gt; to a (hopefully) human readable form.
+<P></P>
+<DT><STRONG><A NAME="item_value_uncooked"><EM>&lt;object</EM>&gt;-&gt;value_uncooked(<EM>&lt;type name</EM>&gt;, <EM>&lt;field attributes table</EM>&gt;, <EM>&lt;invalid</EM>&gt;, <EM>&lt;value representation</EM>&gt;)</A></STRONG><BR>
+<DD>
+converts a human readable representation of a datum to an original form.
+<P></P>
+<DT><STRONG><A NAME="item_error"><EM>&lt;object</EM>&gt;-&gt;error</A></STRONG><BR>
+<DD>
+returns an error message recorded by a method.
+<P></P>
+<DT><STRONG><A NAME="item_crc_expected"><EM>&lt;object</EM>&gt;-&gt;crc_expected</A></STRONG><BR>
+<DD>
+CRC-16 attached to the end of a .FIT file.
+Only available after all contents of the file has been read.
+<P></P>
+<DT><STRONG><A NAME="item_crc"><EM>&lt;object</EM>&gt;-&gt;crc</A></STRONG><BR>
+<DD>
+CRC-16 calculated from the contents of a .FIT file.
+<P></P>
+<DT><STRONG><A NAME="item_trailing_garbages"><EM>&lt;object</EM>&gt;-&gt;trailing_garbages</A></STRONG><BR>
+<DD>
+number of octets after CRC-16, 0 usually.
+<P></P>
+<DT><STRONG><A NAME="item_close"><EM>&lt;object</EM>&gt;-&gt;close</A></STRONG><BR>
+<DD>
+closes opened file handles.
+<P></P>
+<DT><STRONG><A NAME="item_cat_definition_message"><EM>&lt;object</EM>&gt;-&gt;cat_definition_message(<EM>&lt;data message descriptor</EM>&gt;[, <EM>&lt;reference to a scalar</EM>&gt;])</A></STRONG><BR>
+<DD>
+composes the binary form of a definition message after <EM>&lt;data message descriptor</EM>&gt;,
+concatenates the scalar and it,
+and returns the reference to the scalar.
+If the 2nd argument is omitted,
+returns the reference to the binary form.
+<P></P>
+<DT><STRONG><A NAME="item_endian_convert"><EM>&lt;object</EM>&gt;-&gt;endian_convert(<EM>&lt;endian converter</EM>&gt;, <EM>&lt;reference to a scalar</EM>&gt;, <EM>&lt;offset in the scalar</EM>&gt;)</A></STRONG><BR>
+<DD>
+apply <EM>&lt;endian converter</EM>&gt; to the specified part of the scalar.
+<P></P></DL>
+<P>
+<H2><A NAME="data message descriptor">Data message descriptor</A></H2>
+<P>When <A HREF="#item_fetch"><CODE>fetch</CODE></A> method meets a definition message,
+it creates a hash which includes various information about the corresponding data message.
+We call the hash a data message descriptor.
+It includes the following key value pairs.</P>
+<DL>
+<DT><STRONG><A NAME="item_%3Cfield_index%3E_%3D%3E_%3Cfield_name%3E"><EM>&lt;field index</EM>&gt; =&gt; <EM>&lt;field name</EM>&gt;</A></STRONG><BR>
+<DD>
+in a global .FIT profile.
+<P></P>
+<DT><STRONG><A NAME="item_local_message_type_%3D%3E_%3Clocal_message_type%3E"><CODE>local_message_type</CODE> =&gt; <EM>&lt;local message type</EM>&gt;</A></STRONG><BR>
+<DD>
+necessarily.
+<P></P>
+<DT><STRONG><A NAME="item_message_number_%3D%3E_%3Cmessage_number%3E"><A HREF="#item_message_number"><CODE>message_number</CODE></A> =&gt; <EM>&lt;message number</EM>&gt;</A></STRONG><BR>
+<DD>
+necessarily.
+<P></P>
+<DT><STRONG><A NAME="item_message_name_%3D%3E_%3Cmessage_name%3E"><A HREF="#item_message_name"><CODE>message_name</CODE></A> =&gt; <EM>&lt;message name</EM>&gt;</A></STRONG><BR>
+<DD>
+only if the message is documented.
+<P></P>
+<DT><STRONG><A NAME="item_callback_%3D%3E_%3Creference_to_an_array%3E"><CODE>callback</CODE> =&gt; <EM>&lt;reference to an array</EM>&gt;</A></STRONG><BR>
+<DD>
+of a callback function and callback data,
+only if a <CODE>callback</CODE> is registered.
+<P></P>
+<DT><STRONG><A NAME="item_endian_%3D%3E_%3Cendian%3E"><CODE>endian</CODE> =&gt; <EM>&lt;endian</EM>&gt;</A></STRONG><BR>
+<DD>
+of multi-octets data in this message,
+where 0 for littel-endian and 1 for big-endian.
+<P></P>
+<DT><STRONG><A NAME="item_template_%3D%3E_%3Ctemplate_for_unpack%3E"><CODE>template</CODE> =&gt; <EM>&lt;template for unpack</EM>&gt;</A></STRONG><BR>
+<DD>
+used to convert the binary data to an array of Perl representations.
+<P></P>
+<DT><STRONG><A NAME="item_i_%3Cfield_name%3E_%3D%3E_%3Coffset_in_data_array%"><CODE>i_</CODE><EM>&lt;field name</EM>&gt; =&gt; <EM>&lt;offset in data array</EM>&gt;</A></STRONG><BR>
+<DD>
+of the <CODE>value(s)</CODE> of the field named <EM>&lt;field name</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_o_%3Cfield_name%3E_%3D%3E_%3Coffset_in_binary_data"><CODE>o_</CODE><EM>&lt;field_name</EM>&gt; =&gt; <EM>&lt;offset in binary data</EM>&gt;</A></STRONG><BR>
+<DD>
+of the <CODE>value(s)</CODE> of the field named <EM>&lt;field name</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_c_%3Cfield_name%3E_%3D%3E_%3Cthe_number_of_values%"><CODE>c_</CODE><EM>&lt;field_name</EM>&gt; =&gt; <EM>&lt;the number of values</EM>&gt;</A></STRONG><BR>
+<DD>
+of the field named <EM>&lt;field name</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_s_%3Cfield_name%3E_%3D%3E_%3Csize_in_octets%3E"><CODE>s_</CODE><EM>&lt;field_name</EM>&gt; =&gt; <EM>&lt;size in octets</EM>&gt;</A></STRONG><BR>
+<DD>
+of whole the field named <EM>&lt;field name</EM>&gt;
+in binary data.
+<P></P>
+<DT><STRONG><A NAME="item_a_%3Cfield_name%3E_%3D%3E_%3Creference_to_a_hash%3"><CODE>a_</CODE><EM>&lt;field name</EM>&gt; =&gt; <EM>&lt;reference to a hash</EM>&gt;</A></STRONG><BR>
+<DD>
+of attributes of the field named <EM>&lt;field name</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_t_%3Cfield_name%3E_%3D%3E_%3Ctype_name%3E"><CODE>t_</CODE><EM>&lt;field name</EM>&gt; =&gt; <EM>&lt;type name</EM>&gt;</A></STRONG><BR>
+<DD>
+only if the type of the value of the field named <EM>&lt;field name</EM>&gt; has a name.
+<P></P>
+<DT><STRONG><A NAME="item_T_%3Cfield_name%3E_%3D%3E_%3Ca_number%3E"><CODE>T_</CODE><EM>&lt;field name</EM>&gt; =&gt; <EM>&lt;a number</EM>&gt;</A></STRONG><BR>
+<DD>
+representing base type of the value of the field named <EM>&lt;field name</EM>&gt;.
+<P></P>
+<DT><STRONG><A NAME="item_N_%3Cfield_name%3E_%3D%3E_%3Ca_number%3E"><CODE>N_</CODE><EM>&lt;field name</EM>&gt; =&gt; <EM>&lt;a number</EM>&gt;</A></STRONG><BR>
+<DD>
+representing index of the filed named <EM>&lt;field name</EM>&gt; in the global .FIT profile.
+<P></P>
+<DT><STRONG><A NAME="item_I_%3Cfield_name%3E_%3D%3E_%3Ca_number%3E"><CODE>I_</CODE><EM>&lt;field name</EM>&gt; =&gt; <EM>&lt;a number</EM>&gt;</A></STRONG><BR>
+<DD>
+representing the invalid value of the field named <EM>&lt;field name</EM>&gt;,
+that is,
+if the value of the field in a binary datum equals to this number,
+the field must be treated as though it does not exist in the datum.
+<P></P>
+<DT><STRONG><A NAME="item_endian_converter_%3D%3E_%3Creference_to_an_array%3"><CODE>endian_converter</CODE> =&gt; <EM>&lt;reference to an array</EM>&gt;</A></STRONG><BR>
+<DD>
+used for endian conversion.
+<P></P>
+<DT><STRONG><A NAME="item_message_length_%3D%3E_%3Clength_of_binary_data%3E"><CODE>message_length</CODE> =&gt; <EM>&lt;length of binary data</EM>&gt;</A></STRONG><BR>
+<DD>
+in octets.
+<P></P>
+<DT><STRONG><A NAME="item_array_length_%3D%3E_%3Clength_of_data_array%3E"><CODE>array_length</CODE> =&gt; <EM>&lt;length of data array</EM>&gt;</A></STRONG><BR>
+<DD>
+of Perl representations.
+<P></P></DL>
+<P>
+<H2><A NAME="callback function">Callback function</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_When_fetch_method_meets_a_data_message%2C_it_calls">When <A HREF="#item_fetch"><CODE>fetch</CODE></A> method meets a data message,
+it calls a I<EM>&lt;callback function</EM>&gt; registered with <A HREF="#item_data_message_callback_by_name"><CODE>data_message_callback_by_name</CODE></A> or <A HREF="#item_data_message_callback_by_num"><CODE>data_message_callback_by_num</CODE></A>,
+in the form</A></STRONG><BR>
+<DD>
+<EM>&lt;callback function</EM>&gt;-&gt;(<EM>&lt;object</EM>&gt;, <EM>&lt;data message descriptor</EM>&gt;, <EM>&lt;array of field values</EM>&gt;, <EM>&lt;callback data</EM>&gt;, ...).
+<P></P></DL>
+<P>The return value of the function becomes the return value of <A HREF="#item_fetch"><CODE>fetch</CODE></A>.
+It is expected to be <CODE>1</CODE> on success, or <CODE>undef</CODE> on failure status.</P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Kiyokazu SUTO &lt;<A HREF="mailto:suto@ks-and-ks.ne.jp">suto@ks-and-ks.ne.jp</A>&gt;</P>
+<P>
+<HR>
+<H1><A NAME="disclaimer etc.">DISCLAIMER etc.</A></H1>
+<P>This program is distributed with
+ABSOLUTELY NO WARRANTY.</P>
+<P>Anyone can use, modify, and re-distibute this program
+without any restriction.</P>
+<P>
+<HR>
+<H1><A NAME="acknowledgement">ACKNOWLEDGEMENT</A></H1>
+<P>The author is very grateful to Garmin for supplying us free software programers with .FIT SDK
+which includes detailed documetation about its proprietary file format.</P>
+<P>
+<HR>
+<H1><A NAME="changes">CHANGES</A></H1>
+<P>
+<H2><A NAME="0.10 > 0.11">0.10 --&gt; 0.11</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_profile_version"><CODE>profile_version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%named_type"><CODE>%named_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%msgtype_by_name"><CODE>%msgtype_by_name</CODE></A></STRONG><BR>
+<DD>
+follow global profile version 4.10.
+<P></P></DL>
+<P>
+<H2><A NAME="0.09 > 0.10">0.09 --&gt; 0.10</A></H2>
+<DL>
+<DT><STRONG><CODE>profile_version</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%named_type</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%msgtype_by_name</CODE></STRONG><BR>
+<DD>
+follow global profile version 2.00.
+<P></P></DL>
+<P>
+<H2><A NAME="0.08 > 0.09">0.08 --&gt; 0.09</A></H2>
+<DL>
+<DT><STRONG><CODE>profile_version</CODE></STRONG><BR>
+<DD>
+was calculated from wrong string expression.
+<P></P>
+<DT><STRONG><A NAME="item_profile_version_from_string"><CODE>profile_version_from_string()</CODE></A></STRONG><BR>
+<DD>
+should use <CODE>profile_version_scale</CODE> instead of <CODE>profile_version_major_shift</CODE>.
+<P></P>
+<DT><STRONG><CODE>fetch_header()</CODE></STRONG><BR>
+<DD>
+calculate and return header CRCs only for proper protocol version.
+<P></P>
+<DT><STRONG><CODE>cat_header()</CODE></STRONG><BR>
+<DD>
+support header CRCs and extra data in a file header.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bsession%7D%2D%3E%7B35%7D"><CODE>msgtype_by_name-&gt;{session}-&gt;{35}</CODE></A></STRONG><BR>
+<DD>
+<CODE>scale</CODE> attribute was missing.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bsession%7D%2D%3E%7B36%7D"><CODE>msgtype_by_name-&gt;{session}-&gt;{36}</CODE></A></STRONG><BR>
+<DD>
+ditto.
+<P></P></DL>
+<P>
+<H2><A NAME="0.07 > 0.08">0.07 --&gt; 0.08</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_protocol_version"><CODE>protocol_version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>profile_version</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>fetch_header()</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%named_type</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%msgtype_by_name</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%msgtype_by_num"><CODE>%msgtype_by_num</CODE></A></STRONG><BR>
+<DD>
+follow protocol version 1.2 and global profile version 1.50.
+<P></P></DL>
+<P>
+<H2><A NAME="0.06 > 0.07">0.06 --&gt; 0.07</A></H2>
+<DL>
+<DT><STRONG><CODE>profile_version</CODE></STRONG><BR>
+<DD>
+major and minor parts should be computed by division with scale 100,
+not bit shift.
+<P></P>
+<DT><STRONG><CODE>error()</CODE></STRONG><BR>
+<DD>
+.FIT file name is included in each error message.
+<P></P>
+<DT><STRONG><CODE>fetch_header()</CODE></STRONG><BR>
+<DD>
+header length of .FIT files of newer profile version,
+may differ from 12.
+Thanks to report from Nils Knieling.
+<P></P></DL>
+<P>
+<H2><A NAME="0.05 > 0.06">0.05 --&gt; 0.06</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_initialize"><CODE>initialize()</CODE></A></STRONG><BR>
+<DD>
+the member <CODE>buffer</CODE> of an object must be initialzied with a reference to a scalar,
+not the scalar itself.
+Thanks to report from Nils Knieling.
+<P></P></DL>
+<P>
+<H2><A NAME="0.04 > 0.05">0.04 --&gt; 0.05</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_%24version"><CODE>$version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24version_major_scale"><CODE>$version_major_scale</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40version"><CODE>@version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24my_endian"><CODE>$my_endian</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24protocol_version_major_shift"><CODE>$protocol_version_major_shift</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24protocol_version_minor_mask"><CODE>$protocol_version_minor_mask</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24protocol_version"><CODE>$protocol_version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40protocol_version"><CODE>@protocol_version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24profile_version_major_shift"><CODE>$profile_version_major_shift</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24profile_version_minor_mask"><CODE>$profile_version_minor_mask</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24profile_version"><CODE>$profile_version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40profile_version"><CODE>@profile_version</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40crc_table"><CODE>@crc_table</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24header_template"><CODE>$header_template</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24header_length"><CODE>$header_length</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24FIT_signature_string"><CODE>$FIT_signature_string</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24FIT_signature"><CODE>$FIT_signature</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_offset_compressed_timestamp_header"><CODE>$rechd_offset_compressed_timestamp_header</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_mask_compressed_timestamp_header"><CODE>$rechd_mask_compressed_timestamp_header</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_offset_cth_local_message_type"><CODE>$rechd_offset_cth_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_length_cth_local_message_type"><CODE>$rechd_length_cth_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_mask_cth_local_message_type"><CODE>$rechd_mask_cth_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_length_cth_timestamp"><CODE>$rechd_length_cth_timestamp</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_mask_cth_timestamp"><CODE>$rechd_mask_cth_timestamp</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_offset_definition_message"><CODE>$rechd_offset_definition_message</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_mask_definition_message"><CODE>$rechd_mask_definition_message</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_length_local_message_type"><CODE>$rechd_length_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24rechd_mask_local_message_type"><CODE>$rechd_mask_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24cthd_offset_local_message_type"><CODE>$cthd_offset_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24cthd_length_local_message_type"><CODE>$cthd_length_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24cthd_mask_local_message_type"><CODE>$cthd_mask_local_message_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24cthd_length_time_offset"><CODE>$cthd_length_time_offset</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24cthd_mask_time_offset"><CODE>$cthd_mask_time_offset</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24defmsg_min_template"><CODE>$defmsg_min_template</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24defmsg_min_length"><CODE>$defmsg_min_length</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24deffld_template"><CODE>$deffld_template</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24deffld_length"><CODE>$deffld_length</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24deffld_mask_endian_p"><CODE>$deffld_mask_endian_p</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24deffld_mask_type"><CODE>$deffld_mask_type</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40invalid"><CODE>@invalid</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40size"><CODE>@size</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40template"><CODE>@template</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%named_type</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24use_gmtime"><CODE>$use_gmtime</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%msgtype_by_name</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24mesg_name_vs_num"><CODE>$mesg_name_vs_num</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>%msgtype_by_num</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24msgnum_anon"><CODE>$msgnum_anon</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%24msgname_anon"><CODE>$msgname_anon</CODE></A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_%40type_name"><CODE>@type_name</CODE></A></STRONG><BR>
+<DD>
+must be global scope,
+otherwise they can be collected as garbages after long time run.
+Thanks to reports and tests by Nils Knieling.
+<P></P>
+<DT><STRONG><CODE>fetch_header()</CODE></STRONG><BR>
+<DD>
+backslashs in error messages should be quoted.
+<P></P></DL>
+<P>
+<H2><A NAME="0.03 > 0.04">0.03 --&gt; 0.04</A></H2>
+<DL>
+<DT><STRONG><CODE>use_gmtime()</CODE></STRONG><BR>
+<DD>
+works as a class method too.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bfile_id%7D%2D%3E%7B2%7D"><CODE>msgtype_by_name-&gt;{file_id}-&gt;{2}</CODE></A></STRONG><BR>
+<DD>
+new member <A HREF="#item_type_name"><CODE>type_name</CODE></A> with value <CODE>garmin_product</CODE>.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bdevice_info%7D%2D%3E%7B4%7"><CODE>msgtype_by_name-&gt;{device_info}-&gt;{4}</CODE></A></STRONG><BR>
+<DD>
+ditto.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bschedule%7D%2D%3E%7B1%7D"><CODE>msgtype_by_name-&gt;{schedule}-&gt;{1}</CODE></A></STRONG><BR>
+<DD>
+ditto.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bevent%7D%2D%3E%7Bdata16%7D"><CODE>msgtype_by_name-&gt;{event}-&gt;{data16}-&gt;{2}-&gt;{switch}-&gt;{course_point}</CODE></A></STRONG><BR>
+<DD>
+fix wrong member name <CODE>when</CODE> --&gt; <CODE>name</CODE>.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name%2D%3E%7Bevent%7D%2D%3E%7Bdata%7D%2"><CODE>msgtype_by_name-&gt;{event}-&gt;{data}-&gt;{2}-&gt;{switch}-&gt;{course_point}</CODE></A></STRONG><BR>
+<DD>
+ditto.
+<P></P>
+<DT><STRONG><CODE>data_message_callback_by_num()</CODE></STRONG><BR>
+<DD>
+save callback data in the form of new array reference instead of reference to <CODE>@_</CODE>.
+<P></P>
+<DT><STRONG><CODE>data_message_callback_by_name()</CODE></STRONG><BR>
+<DD>
+ditto.
+<P></P>
+<DT><STRONG><CODE>open()</CODE></STRONG><BR>
+<DD>
+make <CODE>$FH</CODE> binary mode.
+Thanks to reports and tests on Windows platform by Nils Knieling.
+<P></P></DL>
+<P>
+<H2><A NAME="0.02 > 0.03">0.02 --&gt; 0.03</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_%40EXPORT"><CODE>@EXPORT</CODE></A></STRONG><BR>
+<DD>
+fix wrong name (<A HREF="#item_FIT_FLOAT16"><CODE>FIT_FLOAT16</CODE></A> --&gt; <CODE>FIT_FLOAT64</CODE>).
+<P></P>
+<DT><STRONG><CODE>my_endian()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_crc_initialize"><CODE>crc_initialize()</CODE></A></STRONG><BR>
+<DD>
+removed.
+CRC table initialized at top level instead.
+<P></P>
+<DT><STRONG><CODE>error()</CODE></STRONG><BR>
+<DD>
+error message tag is simplified.
+<P></P>
+<DT><STRONG><CODE>crc_of_string()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_crc_calc"><CODE>crc_calc()</CODE></A></STRONG><BR>
+<DD>
+use <A HREF="#item_crc_of_string"><CODE>crc_of_string()</CODE></A>.
+<P></P>
+<DT><STRONG><A NAME="item_fill_buffer"><CODE>fill_buffer()</CODE></A></STRONG><BR>
+<DD>
+CRC was not calculated.
+<P></P>
+<DT><STRONG><CODE>cat_header()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_named_type%2D%3E%7Bmesg_num%7D"><CODE>named_type</CODE>-&gt;<CODE>{mesg_num}</CODE></A></STRONG><BR>
+<DD>
+members <CODE>undocumented_message_6</CODE> and <CODE>undocumented_message_22</CODE> are removed.
+<P></P>
+<DT><STRONG><A NAME="item_date_string"><CODE>date_string()</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_named_type_value"><CODE>named_type_value()</CODE></A></STRONG><BR>
+<DD>
+change presentation of mask type type.
+<P>support reverse-conversion of 'date_time' type.</P>
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_name"><CODE>msgtype_by_name</CODE></A></STRONG><BR>
+<DD>
+members <CODE>undocumented_message_6</CODE> and <CODE>undocumented_message_22</CODE> are removed.
+<P></P>
+<DT><STRONG><A NAME="item_msgtype_by_num"><CODE>msgtype_by_num</CODE></A></STRONG><BR>
+<DD>
+undocumented message types are included only in this hash.
+<P></P>
+<DT><STRONG><CODE>message_name()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>message_number()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>field_name()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>field_number()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_undocumented_field_name"><CODE>undocumented_field_name()</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_fetch_definition_message"><CODE>fetch_definition_message()</CODE></A></STRONG><BR>
+<DD>
+usage of <CODE>offset()</CODE> method was wrong.
+<P>use <A HREF="#item_undocumented_field_name"><CODE>undocumented_field_name()</CODE></A>.</P>
+<P>new key-value pairs of the form <CODE>$index =&gt; $name</CODE> in <CODE>%desc</CODE>.</P>
+<P>new key-value pair <CODE>array_length =&gt; $i_array</CODE> in <CODE>%desc</CODE>.</P>
+<P></P>
+<DT><STRONG><CODE>cat_definition_message()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>endian_convert()</CODE></STRONG><BR>
+<DD>
+require more arguments (<CODE>$buffer</CODE> and <CODE>$i</CODE>).
+<P></P>
+<DT><STRONG><A NAME="item_last_timestamp"><CODE>last_timestamp</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><A NAME="item_fetch_data_message"><CODE>fetch_data_message()</CODE></A></STRONG><BR>
+<DD>
+add support for compressed timestamp headers.
+<P></P>
+<DT><STRONG><CODE>switched()</CODE></STRONG><BR>
+<DD>
+add support for multi-switching keys.
+<P></P>
+<DT><STRONG><A NAME="item_value_processed"><CODE>value_processed()</CODE></A></STRONG><BR>
+<DD>
+change format of scaled value without unit.
+<P></P>
+<DT><STRONG><A NAME="item_value_unprocessed"><CODE>value_unprocessed()</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>value_cooked()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>value_uncooked()</CODE></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>fetch()</CODE></STRONG><BR>
+<DD>
+add support for compressed timestamp headers.
+<P></P>
+<DT><STRONG><A NAME="item_type_name"><CODE>type_name</CODE></A></STRONG><BR>
+<DD>
+array of names of types.
+<P></P>
+<DT><STRONG><A NAME="item_print_all_fields"><CODE>print_all_fields()</CODE></A></STRONG><BR>
+<DD>
+add support for compressed timestamp headers.
+<P>change output format.</P>
+<P>use single method <A HREF="#item_value_cooked"><CODE>value_cooked()</CODE></A> instead of methods <A HREF="#item_named_type_value"><CODE>named_type_value()</CODE></A> and <A HREF="#item_value_processed"><CODE>value_processed()</CODE></A>.</P>
+<P></P></DL>
+<P>
+<H2><A NAME="0.01 > 0.02">0.01 --&gt; 0.02</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_EOF"><CODE>EOF</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>fill_buffer()</CODE></STRONG><BR>
+<DD>
+calls <CODE>clear_buffer</CODE> method and <A HREF="#item_EOF"><CODE>EOF</CODE></A> method.
+<P></P>
+<DT><STRONG><CODE>FIT_HEADER_LENGTH()</CODE></STRONG><BR>
+<DD>
+new constant automatically exported.
+<P></P>
+<DT><STRONG><A NAME="item_numeric_date_time"><CODE>numeric_date_time()</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>named_type_value()</CODE></STRONG><BR>
+<DD>
+sprintf format string was wrong.
+<P>calls <A HREF="#item_numeric_date_time"><CODE>numeric_date_time</CODE></A> method.</P>
+<P></P>
+<DT><STRONG><A NAME="item_message_type_by_name%2D%3E%7Blap%7D"><CODE>message_type_by_name-&gt;{lap}</CODE></A></STRONG><BR>
+<DD>
+fix typo (<CODE>totoal_distnace</CODE> --&gt; <CODE>total_distance</CODE>).
+<P></P>
+<DT><STRONG><A NAME="item_message_type_by_name%2D%3E%7Bsession%7D"><CODE>message_type_by_name-&gt;{session}</CODE></A></STRONG><BR>
+<DD>
+ditto.
+<P></P>
+<DT><STRONG><CODE>data_message_callback_by_name()</CODE></STRONG><BR>
+<DD>
+fix wrong member name of <CODE>$msgtype</CODE> (<CODE>num</CODE> --&gt; <CODE>_number</CODE>).
+<P></P>
+<DT><STRONG><CODE>unit_table()</CODE></STRONG><BR>
+<DD>
+accept non hash value.
+<P></P>
+<DT><STRONG><A NAME="item_without_unit"><CODE>without_unit()</CODE></A></STRONG><BR>
+<DD>
+new method.
+<P></P>
+<DT><STRONG><CODE>value_processed()</CODE></STRONG><BR>
+<DD>
+check whether or not <CODE>$attr</CODE> is a hash.
+<P>calls <A HREF="#item_without_unit"><CODE>without_unit</CODE></A> method.</P>
+<P></P>
+<DT><STRONG><CODE>initialize()</CODE></STRONG><BR>
+<DD>
+no user defined options.
+<P>member <A HREF="#item_crc"><CODE>crc</CODE></A> should not be initialized.</P>
+<P></P>
+<DT><STRONG><CODE>print_all_fields()</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>semicircles_to_degree()</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>mps_to_kph()</CODE></STRONG><BR>
+<DD>
+<DT><STRONG><CODE>close</CODE></STRONG><BR>
+<DD>
+new methods.
+<P></P></DL>
+
+</BODY>
+
+</HTML>

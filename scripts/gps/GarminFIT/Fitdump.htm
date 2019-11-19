@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<TITLE>Fitdump - Show contents of Garmin .FIT files</TITLE>
+<LINK REV="made" HREF="mailto:kojima@linet.gr.jp">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#disclaimer etc.">DISCLAIMER etc.</A></LI>
+	<LI><A HREF="#changes">CHANGES</A></LI>
+	<UL>
+
+		<LI><A HREF="#0.03 > 0.04">0.03 -&gt; 0.04</A></LI>
+		<LI><A HREF="#0.02 > 0.03">0.02 -&gt; 0.03</A></LI>
+		<LI><A HREF="#0.01 > 0.02">0.01 -&gt; 0.02</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Fitdump - Show contents of Garmin .FIT files</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  fitdump -show_version=1
+  fitdump [-semicircles_to_deg=(0|1)] [-mps_to_kph=(0|1)] [-use_gmtime=(0|1)] [&lt;file&gt; ... ]</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P><STRONG>Fitdump</STRONG> reads the contents of Garmin .FIT files given on command line
+(or standard input if no file is specified),
+and print them in (hopefully) human readable form.</P>
+The latest version is obtained via<blockquote><a href="/cycling/pub/fitdump-0.04.tar.gz">fitdump-0.04.tar.gz</a> (2KB, 2011-11-23 14:43:50).</blockquote><P>It uses a Perl class</P>
+<blockquote><a href="GarminFIT.shtml"><P><CODE>Garmin::FIT</CODE>.</P>
+</a></blockquote><P>of version 0.04 or later.
+The main role of this program is to give a sample application of the class.</P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Kiyokazu SUTO &lt;<A HREF="mailto:suto@ks-and-ks.ne.jp">suto@ks-and-ks.ne.jp</A>&gt;</P>
+<P>
+<HR>
+<H1><A NAME="disclaimer etc.">DISCLAIMER etc.</A></H1>
+<P>This program is distributed with
+ABSOLUTELY NO WARRANTY.</P>
+<P>Anyone can use, modify, and re-distibute this program
+without any restriction.</P>
+<P>
+<HR>
+<H1><A NAME="changes">CHANGES</A></H1>
+<P>
+<H2><A NAME="0.03 > 0.04">0.03 --&gt; 0.04</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_fetch_from"><CODE>fetch_from()</CODE></A></STRONG><BR>
+<DD>
+follows protocol version 1.2.
+<P></P></DL>
+<P>
+<H2><A NAME="0.02 > 0.03">0.02 --&gt; 0.03</A></H2>
+<DL>
+<DT><STRONG><CODE>fetch_from()</CODE></STRONG><BR>
+<DD>
+should call the method <CODE>close()</CODE> when <CODE>fetch_header()</CODE> failed.
+<P></P></DL>
+<P>
+<H2><A NAME="0.01 > 0.02">0.01 --&gt; 0.02</A></H2>
+<DL>
+<DT><STRONG><A NAME="item_init_it"><CODE>init_it()</CODE></A></STRONG><BR>
+<DD>
+removed.
+<P></P>
+<DT><STRONG><A NAME="item_dump_it"><CODE>dump_it()</CODE></A></STRONG><BR>
+<DD>
+rewrite with new method <CODE>print_all_fields</CODE> of <CODE>Garmin::FIT</CODE>.
+<P></P>
+<DT><STRONG><CODE>fetch_from()</CODE></STRONG><BR>
+<DD>
+renamed from <CODE>fetch_all()</CODE>.
+<P>rewrite with new methods of <CODE>Garmin::FIT</CODE>.</P>
+<P></P></DL>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+GarminFIT=$PWD/GarminFIT
+
+cd ./routes;            mkdir -p 01
+
+for f in $(ls *.fit);do
+    cat $f |perl -I$GarminFIT/ $GarminFIT/fitdump | perl -e "
+        print \"<?xml version=\\\"1.0\\\" standalone=\\\"yes\\\"?><kml xmlns=\\\"http://earth.google.com/kml/2.2\\\">
+        <Document><name>$f</name><visibility>1</visibility><open>1</open><Folder id=\\\"Tracks\\\"><name>Tracks</name><visibility>1</visibility><open>0</open><Placemark>
+        <name>$f</name><Snippet></Snippet><Style><LineStyle><color>FF0000FF</color><width>2</width></LineStyle></Style>
+        <MultiGeometry><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>
+        \\n\";
+        my(\$a1,\$a2,\$a3)=("0","0","0");
+        while(<>){
+        if(m/\s+position_lat\s*\S+:\s*(\S+)deg\s*\S+\s*/) { \$a2=\$1; }
+        if(m/\s+position_long\s*\S+:\s*(\S+)deg\s*\S\s*/) { \$a1=\$1; }
+        if(m/\s+altitude\s*\S+:\s*(\S+)m\s*\S\s*/) { \$a3=\$1;
+                if(\$a1 ne "0"){if(\$a2 ne "0"){print \"\$a1,\$a2,\$a3 \";}}
+            }
+        }
+        print \"</coordinates></LineString></MultiGeometry></Placemark></Folder></Document></kml>\\n\";
+    " >01/$f.kml
+done

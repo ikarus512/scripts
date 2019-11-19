@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+for f in $(ls *.mp4);do
+    echo "################ $f"
+    ffmpeg -i $f -map_metadata -1 ${f%.*}.mp3
+done
