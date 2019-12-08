@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-for f in $(ls *.mp3);do
+for f in $(ls out*.mp3);do
     echo "### $f:"
     ffmpeg -i $f -filter:a volumedetect tmp.$f >$f.txt 2>&1
     rm -fr tmp.$f

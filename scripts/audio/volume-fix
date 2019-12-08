@@ -5,10 +5,10 @@ for f in $(ls *.mp3);do
     #ffmpeg -i input.flac -filter:a "volume=1.5" output.fac
     #ffmpeg -i input.flac -filter:a "volume=5dB" output.flac
     #ffmpeg -i input.flac -filter:a "volume=-5dB" output.flac
-    ffmpeg -i $f -filter:a "volume=1.5" $f.mp3
+    #ffmpeg -i $f -filter:a "volume=1.5" $f.mp3
 
     # normalize (lower peaks and raise valleys)
-    # ffmpeg -i $f -filter:a loudnorm $f.mp3
+    ffmpeg -i $f -filter:a loudnorm $f.mp3
 
 
     ### https://www.ffmpeg.org/ffmpeg-filters.html#volumedetect
