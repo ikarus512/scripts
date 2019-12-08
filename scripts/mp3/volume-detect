@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+for f in $(ls *.mp3);do
+    echo "### $f:"
+    ffmpeg -i $f -filter:a volumedetect tmp.$f >$f.txt 2>&1
+    rm -fr tmp.$f
+    cat $f.txt | grep "mean_volume|max_volume"
+done

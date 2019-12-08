@@ -1,0 +1,6 @@
+### Install ffmpeg-4 from unofficial repo:
+sudo add-apt-repository ppa:jonathonf/ffmpeg-4
+sudo apt update; sudo apt install ffmpeg -y
+
+### Undo (by purging PPA):
+sudo apt-get install ppa-purge && sudo ppa-purge ppa:jonathonf/ffmpeg-4
