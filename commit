@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-msg="scripts added: mp3/volume"
+msg="scripts added: audio/volume-norm"
 
 # pull-n-merge
 #git fetch origin && git merge --no-edit -m "[ci skip] merge with branch master"

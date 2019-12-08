@@ -1,13 +1,35 @@
 #!/usr/bin/env bash
-opts="-threads 4"
-for f in $(ls *.mp3);do
-    ### https://www.maketecheasier.com/normalize-music-files-with-ffmpeg
-    #ffmpeg -i input.flac -filter:a "volume=0.5" output.fac
-    #ffmpeg -i input.flac -filter:a "volume=1.5" output.fac
-    #ffmpeg -i input.flac -filter:a "volume=5dB" output.flac
-    #ffmpeg -i input.flac -filter:a "volume=-5dB" output.flac
-    #ffmpeg -i $f -filter:a "volume=1.5" $f.mp3
 
-    # normalize (lower peaks and raise valleys)
-    ffmpeg -i $f -filter:a loudnorm $f.mp3
+### https://www.maketecheasier.com/normalize-music-files-with-ffmpeg
+### https://www.ffmpeg.org/ffmpeg-filters.html#volumedetect
+#ffmpeg -i input.flac -filter:a "volume=0.5" output.fac
+#ffmpeg -i input.flac -filter:a "volume=1.5" output.fac
+#ffmpeg -i input.flac -filter:a "volume=5dB" output.flac
+#ffmpeg -i input.flac -filter:a "volume=-5dB" output.flac
+#ffmpeg -i $f -filter:a "volume=1.5" $f.mp3
+
+#opts="-threads 4"
+
+mkdir -p 1 2 3
+date= #date
+for f in $(ls *.mp3);do
+    echo "### $f:"
+    $date
+
+    echo "# normalize..." #(lower peaks and raise valleys)
+    ffmpeg -i ./$f  -filter:a loudnorm        1/$f >1/$f.txt 2>&1
+    $date
+
+    echo "# detect avg vol..."
+    ffmpeg -i 1/$f -filter:a volumedetect     2/$f >2/$f.txt 2>&1
+    v=$(cat 2/$f.txt | perl -ne 'if (m/mean_volume: ([\+\-\d\.]+) dB/) { my $v = 0 - $1; print $v."\n"; }') || exit 1
+    echo "vol=$v"
+    $date
+
+    echo "# volume up..."
+    ffmpeg -i 1/$f -filter:a "volume=${v}dB"  3/$f >3/$f.txt 2>&1 || exit 1
+    $date
+
+    echo
+
 done

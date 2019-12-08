@@ -1,0 +1,2 @@
+# for d in $(ls);do if [ -d $d ];then export PATH=$PWD/$d:$PATH; fi; done
+export PATH=$PWD:$PATH

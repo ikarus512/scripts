@@ -3,7 +3,7 @@
 
 in=$1
 out=out.mp3
-s=(00:00:00 00:01:00 00:20:00 00:30:00)
+s=(00:00:00 00:01:00 00:20:00 00:21:00)
 opts=
 opts="$opts -strict -2" ## in case of experimental codec aac
 opts="$opts -acodec copy -vcodec copy"
