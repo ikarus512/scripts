@@ -1,0 +1,3 @@
+            #GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa" git clone ssh://hostname.com/path/repo.git
+            #git clone https://hostname.com/scm/path/repo.git
+            git clone ssh://git@hostname.com/path/repo.git
