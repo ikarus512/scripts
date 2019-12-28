@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+fs="aaa.cal bbb.log"
+for f in $fs;do
+    type=$(perl -sE '$str =~ s/.*(cal|log).*/$1/; print $str;' -- -str="$f")
+    echo name=$f,  type=$type
+done
