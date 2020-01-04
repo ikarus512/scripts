@@ -26,13 +26,13 @@ sudo apt update
 sudo apt-get install -y chromium-browser unclutter xdotool openssh-server net-tools
 
 ### Create user kiosk, not in sudoers group.
-# if [ 1 = 1 ];then # remove user (during experimenting)
-#     sudo killall --user $KIOSK_USER -r || echo "Could not kill all precesses of $KIOSK_USER user"
-#     sleep 1s
-#     sudo userdel $KIOSK_USER -r || echo "Could not remove $KIOSK_USER user"
-#     sudo groupdel $KIOSK_USER   || echo "Could not remove $KIOSK_USER group"
-#     sleep 1s
-# fi
+if [ 0 = 0 ];then # remove user (when experimenting)
+    sudo killall --user $KIOSK_USER -r || echo "Could not kill all precesses of $KIOSK_USER user"
+    sleep 1s
+    sudo userdel $KIOSK_USER -r || echo "Could not remove $KIOSK_USER user"
+    sudo groupdel $KIOSK_USER   || echo "Could not remove $KIOSK_USER group"
+    sleep 1s
+fi
 getent group $KIOSK_USER || (
     sudo su -c "groupadd $KIOSK_USER" # add group kiosk
     sudo su -c "useradd $KIOSK_USER -K PASS_MAX_DAYS=-1 -s /bin/bash -m -g $KIOSK_USER -p $(openssl passwd -1 \"$KIOSK_USER_PASS\")" # Add kiosk user,
@@ -123,6 +123,12 @@ X-GNOME-Autostart-enabled=true
 EOF
 sudo bash -c "echo \"Exec=/home/$KIOSK_USER/kioskfile.sh\" >> $f"
 
+
+### Skip first login welcome screen questionnarie
+### (https://askubuntu.com/questions/1028822/disable-the-new-ubuntu-18-04-welcome-screen)
+f=/etc/xdg/autostart/gnome-initial-setup-first-login.desktop
+if [ ! -f $f.old ];then sudo cp $f $f.old; fi ### Save old version of the file, if not done already.
+sudo su -c "cat $f.old | grep -v 'Exec=/usr/lib/gnome-initial-setup/gnome-initial-setup' > $f"
 
 
 echo Ok

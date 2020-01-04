@@ -28,9 +28,15 @@ done
 # Hide the mouse from the display
 unclutter &
 
-# If Chromium crashes (usually due to rebooting), clear the crash flag so we don't have the annoying warning bar
+### If Chromium crashes (usually due to rebooting), clear the crash flag so we don't have the annoying warning bar
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/$USER/.config/chromium/Default/Preferences
 sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/$USER/.config/chromium/Default/Preferences
+
+### make chromium default browser
+update-alternatives --set x-www-browser /usr/bin/chromium-browser          >>$logfile 2>&1
+
+
+
 
 
 
@@ -55,6 +61,8 @@ opts="$opts --password-store=basic" ### this prevents chrome to create new keyri
 # https://developers.google.com/youtube/player_parameters
 VIDEO_ID=LTTsy6uuzVs
 url="https://www.youtube.com/watch?v=$VIDEO_ID&autoplay=1&playlist=$VIDEO_ID&loop=1"
-/usr/bin/chromium-browser $opts --window-size=1920,1080 --kiosk --window-position=0,0 $url &
+/usr/bin/chromium-browser $opts --window-size=1920,1080 --kiosk --window-position=0,0 $url  >>$logfile 2>&1 &
+sleep 20s; xdotool key space     >>$logfile 2>&1  ### autoplay by pressing space key
+sleep  2s; xdotool key f         >>$logfile 2>&1  ### fullscreen by pressing f
 # Start the kiosk loop. This is just anti-idle
 while (true);do xdotool keydown ctrl; xdotool keyup ctrl; sleep 30s; done
