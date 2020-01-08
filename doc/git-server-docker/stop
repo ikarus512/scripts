@@ -1,0 +1,2 @@
+#sudo docker ps
+#sudo docker stop <CONTAINER_ID>
