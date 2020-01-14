@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+#sudo apt install -y pinta
+
+if [ "$1" != "" ];then
+    pinta "$PWD/$1" &
+else
+    pinta &
+fi
