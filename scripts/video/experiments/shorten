@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#ffmpeg -i in.avi -ss 00:01:00 -to 00:02:00 -target pal-svcd out.avi
+
+cd video; fs=$(ls *.mp4); cd ..
+
+vi=0
+for f in $fs; do
+    let vi=$vi+1
+    if=video/$f
+    Lf=video2/$f.txt  ### list of files to merge
+    m=$(ffmpeg -i video/$f 2>&1 | grep "Duration" | grep -oE "\:[[:digit:]]{2}\:" | grep -oE "[[:digit:]]{2}")
+    s=$(ffmpeg -i video/$f 2>&1 | grep "Duration" | grep -oE "\:[[:digit:]]{2}\:[[:digit:]]{2}" | grep -oE "[[:digit:]]{2}$")
+    let t=$m*60+$s
+    echo "vi=$vi, f=$f:"
+    for ((i=0; i<=t-1; i+=5)); do
+        echo "    second $i of $((t-1))"
+        of=video2/$f.$i.mp4
+        echo file $of >>$Lf
+        ffmpeg -i video/$f -ss $i -to $(($i+1)) $of >>$Lf.log 2>&1
+    done
+    cat $Lf | ffmpeg -protocol_whitelist file,pipe -f concat -safe 0 -i pipe: -vcodec copy -acodec copy video3/$f >>$Lf.log 2>&1
+    #exit
+done
+
+
+
+#cd vid1; (for f in $(ls *.mp4);do echo file vid/$f; done) | ffmpeg -protocol_whitelist file,pipe -f concat -safe 0 -i pipe: -vcodec copy -acodec copy "../result.mp4"
+cd video3; for f in $(ls *.mp4);do echo file video3/$f >>../f.txt; done; cd ..
+cat f.txt | ffmpeg -protocol_whitelist file,pipe -f concat -safe 0 -i pipe: -vcodec copy -acodec copy result.mp4
