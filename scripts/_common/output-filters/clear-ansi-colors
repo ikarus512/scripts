@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+### clear ansi colors
+
+### Usage example:
+###     cat _test.result | clear-ansi-colors
+
+# cat _test.result | perl -pe 's/\e\[[0-9;:]*[a-zA-Z]//g;'
+#echo -e $(cat _test.result)
+#while read LINE; do echo "$LINE"; done < _test.result
+
+perl -pe 's/\e\[[0-9;:]*[a-zA-Z]//g;'
