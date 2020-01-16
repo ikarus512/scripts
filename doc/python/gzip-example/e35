@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+import io    ### or StringIO in python 2.7
+import gzip
+#import zlib # differs from gzip
+
+s_in = b"Misha"
+for i in range(0, 10):
+  s_out = gzip.compress(s_in, compresslevel=i)
+  ret = ''
+  for b in s_out:
+    ret += "%02x " % b
+  print('{:1}: '.format(i) + ret)

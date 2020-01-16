@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+import io    ### io in python 2.7/3.5, or StringIO in python 2.7
+import gzip
+
+### class gzip.GzipFile([filename[, mode[, compresslevel[, fileobj[, mtime]]]]])
+for i in range(0, 10):
+  out = io.BytesIO() ### bytes stream
+  with gzip.GzipFile(fileobj=out, compresslevel=i, mode="w") as f:
+    f.write("Misha")
+    #f.write(b"Misha")   #same
+  st=out.getvalue()
+  print('{:1}: '.format(i) + ' '.join('{0:02x}'.format(ord(x), 'b') for x in st) )
