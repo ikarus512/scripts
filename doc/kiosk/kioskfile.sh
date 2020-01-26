@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
+################################################################################
+#
+# DESCRIPTION
+#
+#   This script is run under kiosk user (kiosk system should automatically login as kiosk user).
+#   It switches off keyboard/mouse.
+#   It opens www page(-s) in chrome (and can switch between pages).
+#
+# TODO
+#   Investigate 'xset -dpms' command to switch off screensaver and screenlock
+#       without a need xdotool.
+#
+################################################################################
+
 
 sleep 1s
 
