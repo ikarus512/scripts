@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+# ### 1) install node.js, phantomjs (ubuntu 18)
+# sudo apt install -y curl npm nodejs fontconfig #freetype
+# sudo npm install -g phantomjs-prebuilt --unsafe-perm
+# # sudo npm uninstall -g phantomjs-prebuilt
+# echo === Here is where phantomjs files and temp files located:
+# ds="/usr/local/share /usr/lib/node_modules /tmp /usr/bin /usr/local/bin"
+# for d in $ds; do if [ -d $d ]; then d1=$(ls $d | grep phantomjs); if [ ! -z $d1 ]; then
+#     echo $d/$d1
+#     # rm -fr $d/$d1
+# fi; fi; done
+# phantomjs --version
+
+mkdir -p 2; cd 2
+
+
+
+### 2) login to first page, download it, find links to subpages
+
+### https://gist.github.com/dannguyen/03a10e850656577cfb57
+# page="https://www.tonymacx86.com/resources/unibeast-9-3-0-mojave.449"
+page=https://gist.github.com/dannguyen
+user=user
+pass=pass
+cooFile=./cookies.txt
+fo=_1.htm
+function str4 () { printf "%04d\n" $1; }
+
+### 2.1) Login and extract "login cookie" name/value/domain
+# curl -L -XGET --output $fo --cookie-jar $cooFile --user $user:$pass -- "$page"
+
+### 2.2) get page as html
+# curl -L -XGET --output $fo --cookie $cooFile -- "$page"
+### in chrome, save network resource as cURL, add -L --output $fo -- "$page"
+# curl \
+#     -H 'Connection: keep-alive' \
+#     -H 'Sec-Fetch-Mode: navigate' \
+#     -H 'If-Modified-Since: Sun, 26 Jan 2020 14:52:28 GMT' \
+#     ...
+#     --compressed -L --output $fo -- "$page"
+
+### 2.3) get the page as pdf
+# # cooFmt1=$(cat $cooFile | perl -ne 'if (m/([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\s]+)\s*$/) { print "{\"domain\":\"$1\",\"httponly\":\"$2\",\"path\":\"$3\",\"secure\":\"$4\",\"expires\":\"$5\",\"name\":\"$6\",\"value\":\"$7\"}"; }')
+# # cooFmt2=
+# # ../web2pdf-https-config.js $page $(str4 0).pdf $cooFmt1
+
+# # cooFmt1=0
+# # cooFmt2="item1=...; item2=..."
+# # ../web2pdf-https-config.js $page $(str4 0).pdf $cooFmt1 "$cooFmt2"
+
+# # cooFmt1=
+# # cooFmt2=
+../web2pdf-https-config.js $page $(str4 0).pdf
+
+### 2.4) parse the page and extract subpage urls
+urls=$(grep -oE "href=\"$page[^\?\"]+" $fo | grep -oE "$page[^\?\"]+")
+# perl -ne 'if (m/([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\s]+)\s*$/) { print "{\"domain\":\"$1\",\"httponly\":\"$2\",\"path\":\"$3\",\"secure\":\"$4\",\"expires\":\"$5\",\"name\":\"$6\",\"value\":\"$7\"}"; }')
+
+# let i=0
+# for f1 in NIC2 SU2 General Git;do let i=$i+1
+#     ../web2pdf-https-config.js $page/$f1 $i.$f1.pdf
+# done
+
+let i=0
+for u in $urls;do let i=$i+1
+    # ../web2pdf-https-config.js $u $(str4 $i).${u//*\//}.pdf
+done

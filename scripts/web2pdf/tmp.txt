@@ -1,0 +1,105 @@
+# PhantomJS 2: PDF rendering too large, page.zoomFactor doesn't work
+https://github.com/ariya/phantomjs/issues/12685
+---------------------------------------------------
+
+From my fiddlings, the solution I have come up with is to set the paper size to what it should be (A4 or whatever), then simply set the width of the document on the body tag in pixels, that seems to zoom it to fit the page to the paper size you have set.
+
+I have rewritten rasterize.js to do this for you with a DPI setting. On the commandline use:
+
+phantomjs rasterize.js https://google.com/ test.pdf --dpi 200[ --optionname value,]
+
+Use the option names defined in args. Also you can use - for either input or output to read from STDIN or STDOUT:
+
+"use strict";
+var page = require('webpage').create(),
+    system = require('system'),
+    render = function (phantom, page, output, config) {
+	
+	// set DPI
+	if (config.dpi !== null) {
+	    page.evaluate(function (dpi) {
+		var div = document.createElement("div"),
+		    body = document.getElementsByTagName("body")[0],
+		    dpi;
+		div.style.width = "1in";
+		body.appendChild(div);
+		if (dpi > div.offsetWidth) {
+		    body.style.width = ((body.offsetWidth / div.offsetWidth) * dpi) + "px";
+		}
+	    }, config.dpi);
+	}
+	
+	// timeout for javascript
+	window.setTimeout(function () {
+	    page.render(output, {format: config.format, quality: config.quality});
+	    phantom.exit();
+	}, config.delay);
+    },
+    config = {
+	width: 800, // image width
+	height: 600, // image height
+	format: "pdf", // pdf png, gif, jpg
+	paper: "A4",
+	orientation: "portrait",
+	margin: "2.54cm",
+	delay: 300, // javascript delay
+	href: "/", // the href alias of the page, allows it to retrieve assets relatively
+	dpi: 200,
+	quality: 80 // jpeg quality
+    },
+    output, key;
+
+if (system.args.length > 2) {
+    
+    // process arguments
+    system.args.slice(3).forEach(function (arg) {
+	if (key) {
+	    config[key] = arg;
+	    key = null;
+	} else if (arg.indexOf("--") === 0) {
+	    key = arg.substr(2);
+	}
+    });
+    
+    // set paper size
+    if (config.format === "pdf") {
+	page.paperSize = {
+	    format: config.paper,
+	    orientation: config.orientation,
+	    margin: config.margin
+	};
+    } else {
+    
+	// set viewport size
+	page.viewportSize = {
+	    width: config.width,
+	    height: config.height
+	};
+	page.clipRect = { top: 0, left: 0, width: config.width, height: config.height };
+    }
+    
+    output = system.args[2] === "-" ? "/dev/stdout" : system.args[2];
+    if (phantom.version.major > 1) {
+	system.stdout.setEncoding("ISO-8859-1");
+    }
+    
+    // output page from stdin
+    if (system.args[1] == "-") {
+	if (phantom.version.major > 1) {
+	    system.stdin.setEncoding("UTF-8");
+	}
+	page.setContent(system.stdin.read(), config.href);
+	render(phantom, page, output, config);
+    
+    // output page from url
+    } else {
+	page.open(system.args[1], function (status) {
+	    if (status !== 'success') {
+		console.log('Unable to load the address!');
+		phantom.exit(1);
+	    } else {
+		render(phantom, page, output, config);
+	    }
+	});
+    }
+}
