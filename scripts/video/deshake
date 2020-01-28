@@ -12,6 +12,7 @@ mkdir -p $d
 for f in $fs; do echo $f
     if [ -f $d/$f  -a  -f $d/$f.started ]; then rm -f $d/$f $d/$f.trf $d/$f.started; fi
     if [ ! -f $d/$f ]; then
+        echo >$d/$f.started
         ### vidstab, pass 1
         ffmpeg -i $f -vf vidstabdetect=stepsize=32:shakiness=10:accuracy=15:result=$d/$f.trf -f null -
         ### vidstab, pass 2
