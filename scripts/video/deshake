@@ -28,5 +28,6 @@ for f in $fs; do echo $f
 
         # #ffmpeg -i $f -filter:v "setpts=PTS/10,fps=fps=2" $d/$f
 
+        rm -f $d/$f.trf $d/$f.started
     fi
 done

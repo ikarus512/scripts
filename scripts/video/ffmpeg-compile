@@ -39,7 +39,7 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
 make
 sudo make install
 #export LD_LIBRRY_PATH=~/ffmpeg_build/lib:$LD_LIBRRY_PATH
-exit
+#exit
 
 mkdir -p ~/ffmpeg_sources ~/bin && \
 cd ~/ffmpeg_sources && \
