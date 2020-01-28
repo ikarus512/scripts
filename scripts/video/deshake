@@ -1,31 +1,31 @@
 #!/usr/bin/env bash
 
 #./ffmpeg-compile
-
 export PATH=~/bin:$PATH
 export LD_LIBRRY_PATH=$HOME/ffmpeg_build/lib:$LD_LIBRRY_PATH
 
 
 fs=$(ls *.mp4)
-mkdir -p video2 video2-deshake video2-vidstab
+d=res
+mkdir -p $d
 
 for f in $fs; do echo $f
-    d=video2
-    #ffmpeg -i $f -filter:v "setpts=PTS/10,fps=fps=2" $d/$f
+    if [ -f $d/$f  -a  -f $d/$f.started ]; then rm -f $d/$f $d/$f.trf $d/$f.started; fi
+    if [ ! -f $d/$f ]; then
+        ### vidstab, pass 1
+        ffmpeg -i $f -vf vidstabdetect=stepsize=32:shakiness=10:accuracy=15:result=$d/$f.trf -f null -
+        ### vidstab, pass 2
+        # https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
+        # https://ffmpeg.org/ffmpeg-filters.html
+        ffmpeg -i $f -filter:v vidstabtransform=input=$d/$f.trf:zoom=0:smoothing=30,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film -crf 18 -acodec copy "$d/$f"
+        #ffmpeg -i $f -filter:v vidstabtransform=input=$d/$f.trf:zoom=1:smoothing=30,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film -crf 18 -acodec copy "$d/z1-$f"
+        #       input.mp4 -vf vidstabtransform=input=transforms.trf:zoom=1:smoothing=10,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film         -acodec copy output.mp4
 
-    d=video2-deshake
-    ### deshake
-    # ffmpeg -i $f -cpuflags -sse2 -filter:v "deshake=rx=64:ry=64:blocksize=128, crop=600:400" $d/$f
-    # ffmpeg -i $f -cpuflags -sse2 -filter:v "deshake=rx=64:ry=64:blocksize=128" $d/$f
+        # ### deshake (worse than vidstab)
+        # # ffmpeg -i $f -cpuflags -sse2 -filter:v "deshake=rx=64:ry=64:blocksize=128, crop=600:400" $d/$f
+        # # ffmpeg -i $f -cpuflags -sse2 -filter:v "deshake=rx=64:ry=64:blocksize=128" $d/$f
 
-    d=video2-vidstab
-    ### vidstab, pass 1
-    ffmpeg -i $f -vf vidstabdetect=stepsize=32:shakiness=10:accuracy=15:result=$d/$f.trf -f null -
-    ### vidstab, pass 2
-    # https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
-    # https://ffmpeg.org/ffmpeg-filters.html
-    ffmpeg -i $f -filter:v vidstabtransform=input=$d/$f.trf:zoom=0:smoothing=30,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film -crf 18 -acodec copy "$d/$f"
-    ffmpeg -i $f -filter:v vidstabtransform=input=$d/$f.trf:zoom=1:smoothing=30,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film -crf 18 -acodec copy "$d/z1-$f"
-    #       input.mp4 -vf vidstabtransform=input=transforms.trf:zoom=1:smoothing=10,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film         -acodec copy output.mp4
+        # #ffmpeg -i $f -filter:v "setpts=PTS/10,fps=fps=2" $d/$f
 
+    fi
 done
