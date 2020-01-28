@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# https://stackoverflow.com/questions/7333232/how-to-concatenate-two-mp4-files-using-ffmpeg
+# https://stackoverflow.com/questions/31691943/ffmpeg-concat-poduces-dts-out-of-order-errors
+
+rm -f filelist.txt probe.txt output.mp4 *.ts
+for f in $(ls *.mp4 | sort); do
+    #ffmpeg -i $f -c copy -bsf:v h264_mp4toannexb -f mpegts $f.ts
+    #ffmpeg -i $f -video_track_timescale 90000 -vf fps=30 -vcodec h264 -bsf:v h264_mp4toannexb -f mpegts $f.ts
+     ffmpeg -i $f -c copy -video_track_timescale 90000 -f mpegts $f.ts
+    echo "file '$f.ts'" >>filelist.txt
+    #ffprobe $f    >>probe.txt 2>&1
+    ffprobe $f.ts >>probe.txt 2>&1
+done
+#ffmpeg -f concat -safe 0 -i filelist.txt -c copy output.mp4
+#ffmpeg -f concat         -i filelist.txt -c copy output.mp4
+#ffmpeg -f concat         -i filelist.txt -c copy -start_at_zero output.mp4
+
+#options="-bsf:a aac_adtstoasc -movflags faststart"
+#ffmpeg -i "concat:input1.ts|input2.ts|input3.ts|input4.ts|input5.ts" -c copy -video_track_timescale 25 $options -f mp4 -threads 1 output.mp4
+#ffmpeg -f concat         -i filelist.txt -c copy -video_track_timescale 25 $options -f mp4 -threads 1 output.mp4
+#ffmpeg -f concat         -i filelist.txt -vcodec copy                      $options -f mp4 -threads 1 output.mp4
+#ffmpeg -f concat         -i filelist.txt -c copy -video_track_timescale 60 $options -f mp4 -threads 1 output.mp4
+ ffmpeg -f concat         -i filelist.txt -c copy -video_track_timescale 90000 -f mp4 -threads 1 output.mp4
