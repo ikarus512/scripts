@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+## https://unix.stackexchange.com/questions/28803/how-can-i-reduce-a-videos-size-with-ffmpeg
+## https://trac.ffmpeg.org/wiki/Encode/H.264#Howdothedifferentpresetsinfluenceencodingtime
+## mplayer and mencoder instead of ffmpeg
+## 2-pass:     http://web.archive.org/web/20171130050515/http://www.mpabo.com/2014/12/14/ffmpeg-and-x264-encoding-guide/
+##    example: ffmpeg -y -i "$1"  -c:v libvpx-vp9 -pass 1 -deadline best -crf 30 -b:v 664k -c:a libopus -f webm /dev/null && ffmpeg -i "$1"  -c:v libvpx-vp9 -pass 2  -crf 30 -b:v 664k  -c:a libopus -strict -2 "$2"
+
+
+#in: 12118 kbps, 60 fps, 1920x1080
+#out: 3000 kbps, 30 fps, 960x540
+
+opt=
+#opt="$opt -b 3000"                ## BitRate, in Bytes per second (-crf already sets it)
+opt="$opt -r 30"                   ## frames per second (after filtering, before encoding)
+#opt="$opt -filter:v fps=fps=30"   ## frames per second filter, http://ffmpeg.org/ffmpeg-filters.html#fps
+opt="$opt -vcodec libx265 -crf 32" ## Constant Rate Factor (single-pass compression: 0=loseless, 23=def, 51=worst)
+## 1920x1080, 960x540, 480x270
+opt="$opt -vf scale=w=960:h=540"   ## scale filter https://trac.ffmpeg.org/wiki/Scaling (flags=lanczos+full_chroma_inp)
+#opt="$opt -vf scale=iw/2:ih/2"    ## scale ##https://trac.ffmpeg.org/wiki/Scaling
+
+## to simplify decompression power for slow viewing devices:
+#opt="$opt -profile:v baseline"    ## https://superuser.com/questions/371460/command-encoding-h264-baseline-profile-level-1-with-ffmpeg-and-libx264
+#opt="$opt -pix_fmt yuv420p"       ## for compatibility
+#opt="$opt -movflags +faststart"   ## allows an early start
+#opt="$opt -preset faster"         ## looks 2x faster than default encoding time of 'medium'
+#opt="$opt -tune stillimage"       ## cartoon/film/stillimage, see https://trac.ffmpeg.org/wiki/Encode/H.264#Howdothedifferentpresetsinfluenceencodingtime
+
+opt="$opt -n"                      ## avoid overwriting output files
+opt="$opt -loglevel error"         ## show errors and hide the rows and rows of progress
+opt="$opt " ##
+
+
+
+#./ffmpeg-compile
+export PATH=~/bin:$PATH
+export LD_LIBRRY_PATH=$HOME/ffmpeg_build/lib:$LD_LIBRRY_PATH
+
+
+fs=$(ls *.mp4)
+d=res
+mkdir -p $d
+
+for f in $fs; do echo $f
+    ffmpeg -i $f $opt $d/$f
+done
