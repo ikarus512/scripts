@@ -1,0 +1,11 @@
+#sudo apt install isc-dhcp-server
+f=isc-dhcp-server
+if [ ! -f $f.old ]; then cp /etc/default/$f $f.old; fi
+cat $f.old | grep -v "INTERFACES=" >$f
+echo "INTERFACES=\"enp1s0\"" >>$f
+sudo cp $f /etc/default/$f
+
+
+f=dhcpd.conf
+if [ ! -f $f.old ]; then cp /etc/dhcp/$f $f.old; fi
+sudo cp $f /etc/dhcp/$f

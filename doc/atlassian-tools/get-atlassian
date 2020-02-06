@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+### install docker ce
+###https://docs.docker.com/v17.09/engine/installation/linux/docker-ce/ubuntu/
+###https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04
+###https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+#sudo apt-get remove docker docker-engine docker.io
+#sudo apt-get update
+#sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+#curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+#sudo apt-key fingerprint 0EBFCD88
+#sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+#sudo apt-get update
+#sudo apt-get install -y docker-ce
+#sudo apt-cache madison docker-ce   ## sudo apt-get install docker-ce=<VERSION>
+#sudo docker run hello-world
+sudo service docker start
+#sudo service docker restart
+docker --version
+
+### Add the docker group if it doesn't already exist:
+#sudo groupadd docker
+### Add the connected user "${USER}" to the docker group:
+#sudo gpasswd -a ${USER} docker
+### Restart the Docker daemon:
+#sudo service docker restart
+#Either do a newgrp docker or log out/in to activate the changes to groups.
+
+
+### add current user to docker group
+#sudo usermod -aG docker $USER
+
+### install docker-compose
+#https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04
+#sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+#sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+### get atlassian, run stash
+#git clone https://github.com/mhubig/atlassian
+### build all the images
+#cd atlassian && docker-compose build
+### build only the stash image
+#cd atlassian/atlassian-stash && docker-compose build
+### start all the docker images (in development mode)
+#docker-compose -f docker-compose-dev.yml up
+### start the stash image (in production mode)
+cd atlassian/atlassian-stash && docker-compose -f docker-compose-dev.yml up
+### inspect the logs
+#cd atlassian && docker-compose logs
