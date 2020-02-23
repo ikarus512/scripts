@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#ffmpeg -i in.avi -ss 00:01:00 -to 00:02:00 -target pal-svcd out.avi
+
+i=0
+for f in $(ls *.mp4); do
+    let i=i+1; ii=$(printf "%02d" $i); echo "$ii: $f"
+    d=${f%.*}; mkdir -p $d
+    ffmpeg -i $f -r 15 -f image2 $d/image-$ii%04d.jpeg >>1.1 2>&1
+    #exit
+done

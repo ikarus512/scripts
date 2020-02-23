@@ -28,31 +28,34 @@ sudo apt-get update -qq && sudo apt-get -y install \
   #libaom-dev
 #exit
 
-mkdir -p ~/ffmpeg_sources ~/ffmpeg_build
+SRC_DIR=$HOME/tmp/ffmpeg_sources
+#DEST_DIR=$HOME/ffmpeg_build
+DEST_DIR=/usr
+
+mkdir -p $SRC_DIR $DEST_DIR
 sudo echo
-cd ~/ffmpeg_sources
+cd $SRC_DIR
 wget -O master.zip https://github.com/georgmartius/vid.stab/archive/master.zip
 unzip master.zip
 cd vid.stab-master
-#cmake -DCMAKE_INSTALL_PREFIX:PATH=~/ffmpeg_build .
-cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
+cmake -DCMAKE_INSTALL_PREFIX:PATH=$DEST_DIR .
 make
 sudo make install
-#export LD_LIBRRY_PATH=~/ffmpeg_build/lib:$LD_LIBRRY_PATH
+#export LD_LIBRRY_PATH=$DEST_DIR/lib:$LD_LIBRRY_PATH
 #exit
 
-mkdir -p ~/ffmpeg_sources ~/bin && \
-cd ~/ffmpeg_sources && \
+mkdir -p $SRC_DIR $DEST_DIR/bin && \
+cd $SRC_DIR && \
 wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
 tar xjvf ffmpeg-snapshot.tar.bz2 && \
 cd ffmpeg && \
-PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
-  --prefix="$HOME/ffmpeg_build" \
+PATH="$DEST_DIR/bin:$PATH" PKG_CONFIG_PATH="$DEST_DIR/lib/pkgconfig" ./configure \
+  --prefix="$DEST_DIR" \
   --pkg-config-flags="--static" \
-  --extra-cflags="-I$HOME/ffmpeg_build/include" \
-  --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
+  --extra-cflags="-I$DEST_DIR/include" \
+  --extra-ldflags="-L$DEST_DIR/lib" \
   --extra-libs="-lpthread -lm" \
-  --bindir="$HOME/bin" \
+  --bindir="$DEST_DIR/bin" \
   --enable-gpl \
   --enable-libass \
   --enable-libfdk-aac \
@@ -65,7 +68,7 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./conf
   --enable-libx264 \
   --enable-libx265 \
   --enable-nonfree && \
-PATH="$HOME/bin:$PATH" make && \
+PATH="$DEST_DIR/bin:$PATH" make && \
 make install && \
 hash -r
   # --enable-libaom

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#ffmpeg -i in.avi -ss 00:01:00 -to 00:02:00 -target pal-svcd out.avi
+#exit
+
+ds="02162020_103146A 02162020_103647A 02162020_104147A 02162020_104647A 02162020_105147A 02162020_105647A 02162020_110147A 02162020_110647A 02162020_111147A 02162020_111647A 02162020_112147A 02162020_112646A 02162020_113147A 02162020_113647A"
+
+for d in $ds; do
+    if [ -d $d ]; then
+        cd $d
+
+        #ffmpeg -i $f -r 5 -f image2 $d/image-$ii%04d.jpeg >>1.1 2>&1
+
+        i=0
+        for f in $(ls image*.jpeg); do
+            echo "=== $d/$f $i"
+            let i=i+1
+            ii=$(printf "aimage-00%04d.jpeg" $i)
+            mv $f $ii
+        done
+
+#        ffmpeg -r 60 -f image2 -s 1920x1080 -i aimage-00%04d.jpeg -vcodec libx264 -crf 25  -pix_fmt yuv420p test.mp4
+
+        cd -
+    fi
+done
