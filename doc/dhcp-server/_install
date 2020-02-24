@@ -1,11 +1,39 @@
-#sudo apt install isc-dhcp-server
-f=isc-dhcp-server
-if [ ! -f $f.old ]; then cp /etc/default/$f $f.old; fi
-cat $f.old | grep -v "INTERFACES=" >$f
-echo "INTERFACES=\"enp1s0\"" >>$f
-sudo cp $f /etc/default/$f
+#!/usr/bin/env bash
 
+## ubuntu 18
 
-f=dhcpd.conf
-if [ ! -f $f.old ]; then cp /etc/dhcp/$f $f.old; fi
-sudo cp $f /etc/dhcp/$f
+#sudo apt install -y isc-dhcp-server net-tools #ifconfig
+
+ethName=$(ip -0 address show | perl -ne 'if (m#\d+:\s*(en\w*s0):#) { print $1; }')
+macAddr1=$(ip -0 address show | grep -E "en\w*s0" -A 1 | perl -ne 'if (m#link\S*\s+(\S+)\s#) { print $1; }')
+macAddr2="00:00:00:00:00:02"
+
+d=/etc/default; f=isc-dhcp-server; if [ ! -f $d/$f.old ]; then sudo cp $d/$f $d/$f.old; fi
+cat $d/$f.old | grep -v "INTERFACES"       >$f
+echo "INTERFACESv4=\"$ethName\""          >>$f
+#echo DHCPDv4_CONF=/etc/dhcp/dhcpd-my.conf >>$f
+#echo DHCPDv4_PID=/var/run/dhcpd-my.pid    >>$f
+sudo cp $f $d/$f
+
+d=/etc/dhcp; f=dhcpd.conf; if [ ! -f $d/$f.old ]; then sudo cp $d/$f $d/$f.old; fi
+#cp $d/$f.old $f
+cat $d/$f.old | grep -v "^$" | grep -v "^#"     >$f
+cat <<EOF | perl -pe "s#macAddr1#$macAddr1#; s#macAddr2#$macAddr2#;" >> $f
+### Define domain name, DHCP server IP address and gateway IP address
+subnet 5.5.5.0 netmask 255.255.255.0 {
+    option domain-name "example.com";
+    option domain-name-servers 5.5.5.2;
+    option routers 5.5.5.1;
+}
+host client1 {
+    hardware ethernet macAddr1;
+    fixed-address 5.5.5.51;
+    option host-name "client1.example.com";
+}
+host client2 {
+    hardware ethernet macAddr2;
+    fixed-address 5.5.5.52;
+    option host-name "client2.example.com";
+}
+EOF
+sudo cp $f $d/$f
