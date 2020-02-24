@@ -69,6 +69,6 @@ PATH="$DEST_DIR/bin:$PATH" PKG_CONFIG_PATH="$DEST_DIR/lib/pkgconfig" ./configure
   --enable-libx265 \
   --enable-nonfree && \
 PATH="$DEST_DIR/bin:$PATH" make && \
-make install && \
+sudo make install && \
 hash -r
   # --enable-libaom
