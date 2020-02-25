@@ -1,5 +1,8 @@
+#sudo systemctl restart isc-dhcp-server.service
+#exit
+
 sudo systemctl start isc-dhcp-server.service
-#sudo systemctl enable isc-dhcp-server.service
+sudo systemctl enable isc-dhcp-server.service
 
 
 sudo ufw allow  67/udp

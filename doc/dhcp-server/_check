@@ -3,11 +3,13 @@
 ethName=$(ip -0 address show | perl -ne 'if (m#\d+:\s*(en\w*s0):#) { print $1; }')
 
 echo "### ip address show"
-ifconfig | grep -E "$ethName" -A 3
-ip a s | grep -E "$ethName" -A 5
+ifconfig $ethName
+#ip a s | grep -E "$ethName" -A 5
 
 echo "### hostname"
 hostnamectl
 
 echo "### DNS server"
 systemd-resolve --status $ethName
+
+#journalctl -f ### and restart dhcp
