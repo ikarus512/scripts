@@ -1,0 +1,4 @@
+#sudo wireshark -D; exit
+src=198.168.1.1
+dst=198.168.1.2
+sudo wireshark -i enp1s0 -f "ip src host $src and ip dst host $dst and port 5432" -k
