@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+#sudo apt install wireshark
 #sudo wireshark -D; exit
 src=198.168.1.1
 dst=198.168.1.2
