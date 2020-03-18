@@ -1,21 +1,21 @@
 ### https://kb.vmware.com/s/article/38
 
-#sudo /etc/init.d/vmware stop
-#while [ $(lsmod | grep vmware | wc -l) -gt 0 ]; do echo "Waiting for vmware stopping..."; sleep 5s; done
-#d=/lib/modules/$(uname -r)/misc; tempfiles=$(ls $d | grep -E "^vm"); for f in $tempfiles; do sudo mv -v $d/$f /tmp; done
+sudo /etc/init.d/vmware stop
+while [ $(lsmod | grep vmware | wc -l) -gt 0 ]; do echo "Waiting for vmware stopping..."; sleep 5s; done
+d=/lib/modules/$(uname -r)/misc; tempfiles=$(ls $d | grep -E "^vm"); for f in $tempfiles; do sudo mv -v $d/$f /tmp; done
 
 
 ### 5. Unload the kernel modules:
-#for f in vmnet.o vmmon.o vmci.o vmblock.o vmppuser.o;do rmmod $f; done
+for f in vmnet.o vmmon.o vmci.o vmblock.o vmppuser.o;do rmmod $f; done
 
 ### 6. Remove the VMware startup scripts:
-#for f in /etc/rc2.d/*vmware* /etc/rc3.d/*vmware* /etc/rc5.d/*vmware* /etc/rc6.d/*vmware*; do sudo rm -v $f; done
+for f in /etc/rc2.d/*vmware* /etc/rc3.d/*vmware* /etc/rc5.d/*vmware* /etc/rc6.d/*vmware*; do sudo rm -v $f; done
 
 ### Remove the remaining VMware files and directories:
-#for f in /etc/vmware* /usr/bin/vmware-usbarbitrator /usr/bin/vmnet* /usr/lib/vmware* /usr/share/doc/vmware*; do sudo rm -frv $f; done
+for f in /etc/vmware* /usr/bin/vmware-usbarbitrator /usr/bin/vmnet* /usr/lib/vmware* /usr/share/doc/vmware*; do sudo rm -frv $f; done
 
 ### If VMware was installed via RPM, remove corresponding RPM packages
-#for f in $(rpm -qa | grep VMware); do rpm --erase --nodeps $f; done
+for f in $(rpm -qa | grep VMware); do rpm --erase --nodeps $f; done
 
 
 
