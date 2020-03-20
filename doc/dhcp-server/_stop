@@ -1,5 +1,5 @@
 sudo systemctl stop isc-dhcp-server.service
-#sudo systemctl disable isc-dhcp-server.service
+sudo systemctl disable isc-dhcp-server.service
 
 
 sudo ufw deny  67/udp

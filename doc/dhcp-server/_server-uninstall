@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+fs="/etc/default/isc-dhcp-server /etc/dhcp/dhcpd.conf /etc/default/dhcpd.conf /etc/network/interfaces"
+for f in $fs; do if [ -f $f.old ]; then sudo cp -vf $f.old $f; fi; done
+
+#sudo apt install -y isc-dhcp-server #net-tools
+sudo systemctl restart networking

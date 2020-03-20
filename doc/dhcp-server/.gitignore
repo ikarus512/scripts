@@ -1,2 +1,4 @@
 dhcpd.conf
 isc-dhcp-server
+interfaces
+etc-*

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-msg="scripts added: audio/volume-norm"
+if [ ! -z "$*" ];then msg="$*"
+else msg="scripts added: audio/volume-norm"
+fi
+
 
 # pull-n-merge
 #git fetch origin && git merge --no-edit -m "[ci skip] merge with branch master"
