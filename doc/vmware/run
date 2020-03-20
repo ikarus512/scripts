@@ -1,1 +1,10 @@
+
+### Option 1: start the VM with GUI
 /usr/bin/vmware --power-on /home/vmware/vm-dir
+
+
+
+### Option2: start the VM without GUI (can be run through ssh)
+vmrun -T player start “path/to/yourVM.vmx” nogui
+### Stop the VM
+vmrun -T player stop “path/to/yourVM.vmx” hard
