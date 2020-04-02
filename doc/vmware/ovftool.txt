@@ -1,0 +1,4 @@
+wget http://ftp.tucha13.net/pub/software/VMware-ovftool-4.1.0/VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle
+sudo apt install python3.7 -y
+`
+#sudo ldconfig /usr/local/lib
