@@ -1,0 +1,25 @@
+timestamp1=$(timestamp)
+host=xxx.xxx.xxx.xxx
+opts="-o StrictHostKeyChecking=accept-new -o ConnectTimeout=2"
+d=$PWD/$timestamp1; mkdir -p $d
+user=user
+pass=pass
+app=app
+
+
+###ssh-keygen -f ~/.ssh/known_hosts -R $host
+
+
+i=0
+while [ true ]; do let i=i+1; iii=$(printf "%04d" $i); echo i=$i
+    echo -n "=== ping $host ==="; while [ "$(ping $host -n 1 | grep -o unreachable)" == "unreachable" ]; do echo -n "ping"; sleep 2s; done; echo
+    echo -n "=== clean known_hosts from $host ==="; ssh $opts $user@$host "pwd" 1>/dev/null 2>/dev/null; if [ $? != 0 ]; then ssh-keygen -R $host 1>/dev/null 2>/dev/null; fi
+    echo -n "=== ssh $host ==="; while [ "$(ssh $opts $user@$host \"pwd\" >/dev/null 2>/dev/null; echo $?)" != 0 ]; do echo -n "ssh"; sleep 2s; done; echo
+
+    ssh $opts $user@$host "journalctl"            2>&1        1>$d/$iii.alltime.allapps.txt
+#   ssh $opts $user@$host "journalctl -t $app"    2>&1        1>$d/$iii.$app.txt
+#   ssh $opts $user@$host "journalctl -f"         2>&1        1>$d/$iii.last.all.txt &
+    ssh $opts $user@$host "journalctl -f"         2>&1 | tee -a $d/$iii.lasttime.allapps.txt
+#   ssh $opts $user@$host "journalctl -t $app -f" 2>&1 | tee -a $d/----.last.$app.txt
+    sleep 1s
+done

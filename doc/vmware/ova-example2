@@ -1,0 +1,81 @@
+clear
+n=../image.ova
+v=mari
+t= #"-T player" #ws|fusion|player
+user=user
+pass=aa
+
+#vmrun $t start $v/$v.vmx nogui
+vmrun $t stop  $v/$v.vmx hard; exit
+#vmrun $t reset  $v/$v.vmx hard
+#vmrun $t list
+#vmrun $t getGuestIPAddress $v/$v.vmx -wait
+#exit
+#vmrun $t readVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddress
+#vmrun $t -gu $user -gp "$pass" runProgramInGuest $v/$v.vmx "pwd;ls -l" ;exit
+#vmrun $t CopyFileFromHostToGuest $v/$v.vmx Path-on-host Path-in-guest
+#vmrun $t CopyFileFromGuestToHost $v/$v.vmx Path-in-guest Path-on-host
+#vmrun $t checkToolsState $v/$v.vmx;exit
+#exit
+
+
+
+if [ -d $v ]; then
+    vmrun $t stop $v/$v.vmx hard
+    sleep 2s
+    vmrun $t list
+    rm -fr $v
+fi
+mkdir $v || exit
+
+echo "==Convert..."
+ovftool $n $v/$v.vmx
+
+ echo "==Guest start   : $(vmrun $t start             $v/$v.vmx nogui)"
+ echo "==Tools guest ip: $(vmrun $t getGuestIPAddress $v/$v.vmx -wait)"
+  vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddress "00:00:00:00:00:00"
+  #vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.addressType "static"
+  #vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.address "00:00:00:00:00:00"
+  #vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddress "00:00:00:00:00:00"
+  vmrun $t disconnectNamedDevice $v/$v.vmx runtimeConfig e1000
+  vmrun $t    connectNamedDevice $v/$v.vmx runtimeConfig e1000
+
+ echo "==Guest stop    : $(vmrun $t stop              $v/$v.vmx  soft)"
+#echo "==Guest suspend : $(vmrun $t suspend           $v/$v.vmx  soft)"
+
+
+f=$v/$v.vmx; if [ ! -f $f.old ]; then cp $f $f.old; fi
+# cat $f.old | grep -v "ethernet0.addressType"    >$f
+# echo "ethernet0.addressType \"static\""        >>$f
+# echo "ethernet0.address \"00:00:00:00:00:00\"" >>$f
+#cat $f.old | grep -v "ethernet0.generatedAddress"    >$f
+# echo "ethernet0.generatedAddress \"00:00:00:00:00:00\"" >>$f
+
+ echo "==Guest start   : $(vmrun $t start             $v/$v.vmx nogui)"
+ echo "==Tools guest ip: $(vmrun $t getGuestIPAddress $v/$v.vmx -wait)"
+exit
+
+
+
+
+sleep 2s
+echo "==Write rtvars..."
+#vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.connectionType "bridged"
+#vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.startConnected "TRUE"
+ vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddress ""
+ vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddressOffset ""
+ vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.addressType "static"
+ vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.address "00:00:00:00:00:00"
+ echo "==Tools guest ip: $(vmrun $t getGuestIPAddress $v/$v.vmx -wait)"
+ echo "==Guest soft reset..."; vmrun $t reset $v/$v.vmx soft
+ echo "==Tools guest ip: $(vmrun $t getGuestIPAddress $v/$v.vmx -wait)"
+ rtvars="ethernet0.connectionType ethernet0.startConnected ethernet0.generatedAddress ethernet0.generatedAddressOffset ethernet0.addressType ethernet0.address"
+ for rtvar in $rtvars; do echo "  $rtvar = $(vmrun $t  readVariable $v/$v.vmx runtimeConfig $rtvar)"; done
+
+sleep 2s
+vmrun $t list
+echo "==Tools install : $(vmrun $t installTools    $v/$v.vmx)"
+echo "==Tools guest ip: $(vmrun $t getGuestIPAddress $v/$v.vmx -wait)"
+echo "==Tools state   : $(vmrun $t checkToolsState $v/$v.vmx)"
+echo "==captureScreen : $(vmrun $t captureScreen $v/$v.vmx 1.jpg)"
+vmrun $t -gu $user -gp "$pass" runProgramInGuest $v/$v.vmx "pwd;ls -l"

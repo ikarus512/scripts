@@ -1,0 +1,39 @@
+clear
+n=./image.ova
+v=image
+t= #"-T player" #ws|fusion|player
+mac=00:00:00:00:00:00; ip=000.000.000.000
+opts="-o StrictHostKeyChecking=accept-new"
+user=user
+pass=pass
+
+#vmrun $t start $v/$v.vmx nogui
+#vmrun $t stop  $v/$v.vmx hard; exit
+#vmrun $t reset $v/$v.vmx soft; exit
+#vmrun $t list
+#vmrun $t getGuestIPAddress $v/$v.vmx -wait
+#exit
+
+
+if [ -d $v ]; then
+    vmrun $t stop $v/$v.vmx hard
+    sleep 2s
+    vmrun $t list
+    rm -fr $v
+fi
+mkdir $v || exit
+
+echo "==Convert..."
+ovftool $n $v/$v.vmx
+
+ echo "==Guest start   : $(vmrun $t start             $v/$v.vmx nogui)"
+ cur_ip=$(vmrun $t getGuestIPAddress $v/$v.vmx -wait); echo "==Tools guest ip: $cur_ip"
+  vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddress "$mac"
+  #vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.addressType "static"
+  #vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.address "$mac"
+  #vmrun $t writeVariable $v/$v.vmx runtimeConfig ethernet0.generatedAddress "$mac"
+  #vmrun $t disconnectNamedDevice $v/$v.vmx runtimeConfig e1000
+  #vmrun $t    connectNamedDevice $v/$v.vmx runtimeConfig e1000
+ ssh-keygen -R $cur_ip; ssh $opts $user@$cur_ip "sudo ifconfig eth0 hw ether $mac; reboot"
+ echo "==Tools guest ip: $(vmrun $t getGuestIPAddress $v/$v.vmx -wait)"
+ ssh-keygen -R $ip; ssh $opts $user@$ip "ip addr"
