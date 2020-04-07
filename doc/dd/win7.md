@@ -1,3 +1,15 @@
+lsblk
+df -h
+sudo dd if=/path/to/ubuntu.iso of=/dev/sdX bs=4M status=progress && sync
+exit
+sudo apt install syslinux-utils syslinux mtools -y
+exit
+isohybrid win7-lic.iso
+exit
+sudo umount /dev/sdc
+sudo umount /dev/sdc1
+exit
+
 ### https://superuser.com/questions/591234/how-to-create-a-bootable-usb-from-a-bootable-iso-with-the-command-line-on-linux
 
 Ok after some research I've figured out a solution, and I'll go through it step by step. Problem was two-fold.
@@ -30,3 +42,7 @@ This seems to work just fine, but the forum where I got the last fix, it was rec
 
  sync
  sudo eject /dev/s
+
+
+
+
