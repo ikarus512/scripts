@@ -1,8 +1,12 @@
 ### https://kb.vmware.com/s/article/38
 
-sudo dpkg --remove vmware
-sudo dpkg --purge  vmware
-exit
+#sudo dpkg -l | grep -Ei "vmware|ovf"
+fs=$(sudo apt list | perl -ne 'if (m/vmware/) { s#^([^/]*)/.*$#$1#; print; };'); fs="$fs vmware ovftool python python3 python-pip python3-pip"
+sudo apt remove -y $fs; sudo apt autoremove -y; sudo apt update
+sudo dpkg --remove $fs
+sudo dpkg --purge $fs
+#for f in $fs; do sudo dpkg --remove $f; sudo dpkg --purge $f; done
+#exit
 
 sudo /etc/init.d/vmware stop
 while [ $(lsmod | grep vmware | wc -l) -gt 0 ]; do echo "Waiting for vmware stopping..."; sleep 5s; done
