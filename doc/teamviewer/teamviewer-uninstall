@@ -1,0 +1,7 @@
+
+#sudo apt remove teamviewer
+sudo dpkg --remove teamviewer
+sudo dpkg --purge  teamviewer
+echo ==
+dpkg -l | grep team
+#dpkg -l | less

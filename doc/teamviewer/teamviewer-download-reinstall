@@ -1,0 +1,17 @@
+d=20200417; v=no; f1=teamviewer_amd64.deb ### teamviewer_i386.deb  ### 
+wget https://download.teamviewer.com/download/linux/$f1; v=15.4.4445
+#wget https://download.teamviewer.com/download/linux/version_14x/$f1; v=14.7.13736
+#wget https://download.teamviewer.com/download/linux/version_13x/$f1; v=13.2.119192
+#wget https://download.teamviewer.com/download/version_12x/$f1; v=12.1.224562
+#wget https://download.teamviewer.com/download/version_11x/$f1; v=11.0.224193
+#wget https://download.teamviewer.com/download/version_10x/$f1; v=10.0.223993
+f2=$f1.$d.v$v.deb
+mv $f1 $f2
+sudo dpkg --remove teamviewer
+sudo dpkg --purge  teamviewer
+sudo dpkg --install $f2
+sleep 5s; sudo /usr/bin/teamviewer --info
+sleep 5s; sudo /usr/bin/teamviewer --daemon restart; sleep 5s; sudo /usr/bin/teamviewer --info
+#sleep 5s; sudo /usr/bin/teamviewer --daemon restart; sleep 5s; sudo /usr/bin/teamviewer --info
+
+#sudo systemctl status teamviewer; /usr/bin/teamviewer --info

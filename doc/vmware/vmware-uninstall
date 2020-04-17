@@ -1,8 +1,12 @@
 ### https://kb.vmware.com/s/article/38
 
+sudo dpkg --remove vmware
+sudo dpkg --purge  vmware
+exit
+
 sudo /etc/init.d/vmware stop
 while [ $(lsmod | grep vmware | wc -l) -gt 0 ]; do echo "Waiting for vmware stopping..."; sleep 5s; done
-d=/lib/modules/$(uname -r)/misc; tempfiles=$(ls $d | grep -E "^vm"); for f in $tempfiles; do sudo mv -v $d/$f /tmp; done
+d=/lib/modules/$(uname -r)/misc; tempfiles=$(ls $d | grep -E "^vm"); for f in $tempfiles; do sudo rm -fr $d/$f; done
 
 
 ### 5. Unload the kernel modules:
@@ -15,10 +19,20 @@ for f in /etc/rc2.d/*vmware* /etc/rc3.d/*vmware* /etc/rc5.d/*vmware* /etc/rc6.d/
 for f in /etc/vmware* /usr/bin/vmware-usbarbitrator /usr/bin/vmnet* /usr/lib/vmware* /usr/share/doc/vmware*; do sudo rm -frv $f; done
 
 ### If VMware was installed via RPM, remove corresponding RPM packages
-for f in $(rpm -qa | grep VMware); do rpm --erase --nodeps $f; done
+if [ "$(which rpm)" != "" ]; then for f in $(rpm -qa | grep VMware); do rpm --erase --nodeps $f; done; fi
 
 
-
-
-rm -fr ~/.vmware
 rm -fr ~/.cache/vmware
+rm -fr ~/.vmware
+
+
+exit
+
+sudo find /sys -name "*vmware*" -exec rm -fr {} \;
+sudo find /etc -name "*vmware*" -exec rm -fr {} \;
+sudo find /usr -name "*vmware*" -exec rm -fr {} \;
+sudo find /var -name "*vmware*" -exec rm -fr {} \;
+sudo find /tmp -name "*vmware*" -exec rm -fr {} \;
+
+echo ===
+sudo find / -name "*vmware*" | grep -v "/home" | grep -v "/opt"
