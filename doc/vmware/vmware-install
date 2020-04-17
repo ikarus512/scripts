@@ -1,0 +1,1 @@
+env TERM=dumb VMWARE_EULAS_AGREED=yes ./VMware*.bundle --console --required
