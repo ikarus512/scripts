@@ -10,9 +10,11 @@ passphrase=passphrase
 #export DISPLAY=:
 #export ASK_PASS=$f
 #SSH_OPTIONS="-oLogLevel=error -oStrictHostKeyChecking=no  -oUserKnownHostsFile=/dev/null -v"
+su $user    # login as proper user
 ssh-keygen -t ed25519 -a 100   -f $keyfile -N '' # empty passprase
-ssh-copy-id -i $keyfile $user@$host
+chmod 600 $keyfile
 puttygen $keyfile -o $keyfile.ppk    # save private key for PuTTY
+ssh-copy-id -i $keyfile $user@$host
 #echo -n "#" >$f; echo -n "!" >>$f; echo "/usr/bin/env bash" >>$f; echo "echo $passphrase" >>$f; chmod 777 $f
 #echo foo | $setsid ssh $SSH_OPTIONS -i $keyfile $user@$host "who"
 ssh -i $keyfile $user@$host "who"
