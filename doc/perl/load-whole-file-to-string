@@ -26,15 +26,24 @@
 
 # Example to clamp function arguments into one line
 clear
+
+
 cat <<- '____EOF_SQL' \
-    | perl -0pe 'while( s#(\([^\(]*)\n([^\(]*\))#$1$2#g ) {};' \
-    | perl -pe 'while( s#(^.*\S.*)  (.*$)#$1 $2#g ) {};' \
-    | perl -pe 's#\s*(\()\s*#$1#g;' \
-    | perl -pe 's#\s*(\))\s*#$1#g;' \
-    | perl -pe 's#\s*(\))\s*RETURNS\s+(\w+)\s+AS#$1 RETURNS $2\nAS#g;'
-	CREATE OR REPLACE FUNCTION schema1.func1(
-	    arg1 integer,
-	    arg2 integer)
+| perl -0pe 'while( s#(\([^\(\)]*)\n([^\(\)]*\))#$1$2#g ) {};' \
+| perl -0pe 's#\s*\)\s*RETURNS\s+(\w+)\s+AS#) RETURNS $1\nAS#g;' \
+| perl -pe 'while( s#(^.*\S.*)  (.*$)#$1 $2#g ) {};' \
+| perl -pe 's#\s*(\()\s*#$1#g;' \
+| perl -pe 's# OR REPLACE##g;' \
+| perl -pe 's# VOID# void#g;' \
+| perl -pe 's#IN ##g;' \
+| perl -pe 's#(\w*\.\w*)#@{[lc($1)]}#g;' \
+| perl -pe 's#(\w),(\w)#$1, $2#g;' \
+| perl -pe 's#integer\[\] DEFAULT NULL\s*([^:])#integer[] DEFAULT NULL::integer[]$1#g;'
+
+	CREATE OR REPLACE FUNCTION schema1.Func1 ( 
+	    IN arg1 integer,
+	    IN arg2 integer[] DEFAULT NULL,
+	    OUT status integer ) 
 	RETURNS boolean AS
 	$BODY$
 	    SELECT COALESCE(
@@ -43,9 +52,10 @@ cat <<- '____EOF_SQL' \
 	LANGUAGE SQL VOLATILE SECURITY DEFINER
 	COST 100;
 
-	CREATE OR REPLACE FUNCTION schema1.func2(
-	    arg1 integer,
-	    arg2 integer)
+	CREATE OR REPLACE FUNCTION schema1.Func2(
+	    IN arg1 integer,
+	    IN arg2 integer,
+	    OUT status integer)
 	RETURNS boolean AS
 	$BODY$
 	    SELECT COALESCE(
@@ -53,5 +63,4 @@ cat <<- '____EOF_SQL' \
 	$BODY$
 	LANGUAGE SQL VOLATILE SECURITY DEFINER
 	COST 100;
-
 ____EOF_SQL
