@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Syntax:
+#
+# [COMMAND] <<[-] 'DELIMITER'
+#   HERE-DOCUMENT
+# DELIMITER
+#
+# 1) - causes removal of all leading TABs in each line of HERE-DOCUMENT (and TABs are allowed before DELIMITER)
+# 2) unquoted DELIMITER enables substitution of $variables, shell $(commands), special characters
+#    before passing HERE-DOCUMENT to the COMMAND
+
+if [ 1 == 1 ]; then
+	echo "==="
+
+	#cat <<- '____EOF_SQL'
+        cat <<- '____EOF_SQL' | grep -vE LANGUAGE
+		CREATE OR REPLACE FUNCTION schema1.func1(
+		    arg1 integer,
+		    arg2 integer)
+		RETURNS boolean AS
+		$BODY$
+		    SELECT COALESCE(
+		        false);
+		$BODY$
+		LANGUAGE SQL VOLATILE SECURITY DEFINER
+		COST 100;
+
+		CREATE OR REPLACE FUNCTION schema1.func2(
+		    arg1 integer,
+		    arg2 integer)
+		RETURNS boolean AS
+		$BODY$
+		    SELECT COALESCE(
+		        false);
+		$BODY$
+		LANGUAGE SQL VOLATILE SECURITY DEFINER
+		COST 100;
+
+	____EOF_SQL
+
+	echo "==="
+fi

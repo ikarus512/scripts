@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# Options to load the whole (text) file into one string variable.
+#
+# From text file:
+#   1) install Slurp CPAN module, and:
+#       use File::Slurp;
+#       my $file_content = read_file('text_document.txt');
+#   2)
+#       open my $fh, '<', 'text_document.txt' or die "Can't open file $!";
+#       my $file_content = do { local $/; <$fh> };
+#   3)
+#       open my $fh, '<', 'text_document.txt' or die "Can't open file $!";
+#       read $fh, my $file_content, -s $fh;
+#   4) PerlIO layers
+#       open my $fh, '<:unix', 'text_document.txt' or die "Couldn't open $filename: $!";
+#
+# From STDIN:
+#   5)
+#       my $file_content = do{local(@ARGV,$/)=$filename;<>};
+#   6)
+#       my @lines = <>;
+#       my $file_content = join("", @lines);
+#   7) use perl command line option -0 ($_ will contain the whole STDIN)
+
+
+# Example to clamp function arguments into one line
+clear
+cat <<- '____EOF_SQL' \
+    | perl -0pe 'while( s#(\([^\(]*)\n([^\(]*\))#$1$2#g ) {};' \
+    | perl -pe 'while( s#(^.*\S.*)  (.*$)#$1 $2#g ) {};' \
+    | perl -pe 's#\s*(\()\s*#$1#g;' \
+    | perl -pe 's#\s*(\))\s*#$1#g;' \
+    | perl -pe 's#\s*(\))\s*RETURNS\s+(\w+)\s+AS#$1 RETURNS $2\nAS#g;'
+	CREATE OR REPLACE FUNCTION schema1.func1(
+	    arg1 integer,
+	    arg2 integer)
+	RETURNS boolean AS
+	$BODY$
+	    SELECT COALESCE(
+	        false);
+	$BODY$
+	LANGUAGE SQL VOLATILE SECURITY DEFINER
+	COST 100;
+
+	CREATE OR REPLACE FUNCTION schema1.func2(
+	    arg1 integer,
+	    arg2 integer)
+	RETURNS boolean AS
+	$BODY$
+	    SELECT COALESCE(
+	        false);
+	$BODY$
+	LANGUAGE SQL VOLATILE SECURITY DEFINER
+	COST 100;
+
+____EOF_SQL
