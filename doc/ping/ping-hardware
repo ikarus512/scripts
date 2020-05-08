@@ -22,6 +22,7 @@ msys)
 esac
 
 if [ "$(which nmap)" == "" ]; then cmd="sudo apt install -y nmap"; echo $cmd; $cmd; fi
+# nmap used instead of ping, to detect active Windows systems, where ping unavailable (because of Firewall, or file share closed, or etc)
 
 
 
