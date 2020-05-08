@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+htm=./ping_results.htm
+httpserverip=yy.yy.yy.yy
+
+### System list (ip:description:owner)
+a=
+a="$a xx.xx.xx.xx:PCWindows:User1"
+a="$a xx.xx.xx.xx:PCWindows:User2"
+a="$a xx.xx.xx.xx:PCLinux:User2"
+
+
+case $OSTYPE in
+msys)
+    # Here if Windows version of ping (tested on Windows 10)
+    ping_quick_opts="-n 1 -w 2000" # do not wait ping answer more than 2 seconds
+    ;;
+*)
+    ## Here if Linux version of ping (tested on Ubuntu 18)
+    ping_quick_opts="-c 1 -W 2" # do not wait ping answer more than 2 seconds
+    ;;
+esac
+
+if [ "$(which nmap)" == "" ]; then cmd="sudo apt install -y nmap"; echo $cmd; $cmd; fi
+
+
+
+
+hostip=$(echo $(ip addr 2>/dev/null || ipconfig 2>/dev/null || ifconfig 2>/dev/null) | grep -oP "$httpserverip")
+if [ "$hostip" == "$httpserverip" ]; then ping_quick_opts="-c 1 -W 1"; fi
+
+function timestamp() { perl -e 'my($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);  printf("%04d%02d%02d_%02d%02d%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);'; }
+tmpfile=/tmp/$(timestamp)
+
+function resultHtmStart() {
+    if [ "$hostip" == "$httpserverip" ]; then
+        echo -e "\n ### Recent result available at http://.../$htm\n\n"
+        echo "<pre>" >$tmpfile
+    fi
+}
+function resultHtmFinish() {
+    if [ "$hostip" == "$httpserverip" ]; then
+        mv -f $tmpfile $htm
+    fi
+}
+function resultHtmAdd() {
+    dest=$1
+    str="$2"
+    system=$3
+    ip=$(         perl -sE 'if ($system =~ m#^(.*):(.*):(.*)$#) { print $1; }' -- -system="$system")
+    description=$(perl -sE 'if ($system =~ m#^(.*):(.*):(.*)$#) { print $2; }' -- -system="$system")
+    owner=$(      perl -sE 'if ($system =~ m#^(.*):(.*):(.*)$#) { print $3; }' -- -system="$system")
+    str=$(printf "%16s %-16s %-10s %s\n" "$str" $ip $description $owner)
+
+    if [ "$dest" != "2" ]; then
+        echo "$str"
+    fi
+    if [ "$hostip" == "$httpserverip" ]; then
+        echo "$str" >>$tmpfile
+    fi
+}
+
+
+while [ 1 = 1 ]; do
+    list_ok=
+    list_fail=
+    echo -e "\n\n### New pinging in progress:"
+    for system in $a; do
+        ip=$(         perl -sE 'if ($system =~ m#^(.*):(.*):(.*)$#) { print $1; }' -- -system="$system")
+        description=$(perl -sE 'if ($system =~ m#^(.*):(.*):(.*)$#) { print $2; }' -- -system="$system")
+        if [[ ! $description =~ Falcon ]]; then
+            ip4d=$(echo $ip | perl -pe 's#^.*\.(\d+)$#$1#')
+            ping $ip $ping_quick_opts >/dev/null
+            if [[ $? == 0 ]] || [[ "$description" =~ "Windows" ]] && [[ "$(nmap -sP -Pn $ip | grep -o 'Host is up')" == "Host is up" ]]; then
+                list_ok="$list_ok $system"
+                echo -n " $ip4d"
+            else
+                list_fail="$list_fail $system"
+                echo -n " $ip4d:FAIL"
+            fi
+        fi
+    done
+    echo -e "\n\n"
+    clear
+
+    resultHtmStart
+
+    resultHtmAdd a "Command: ./ping-hardware"
+    resultHtmAdd a "Last run: $(timestamp)"
+    resultHtmAdd
+
+    resultHtmAdd a "### Recent fails:"
+    for system in $list_fail; do resultHtmAdd a "ping FAIL: " $system; done
+    resultHtmAdd
+
+    resultHtmAdd 2 "### Recent successes:"
+    for system in $list_ok; do resultHtmAdd 2 "ping OK: " $system; done
+    resultHtmAdd
+
+    resultHtmFinish
+
+    sleep 2s
+done
