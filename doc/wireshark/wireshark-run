@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#sudo apt install -y wireshark
+#sudo wireshark -D    # list all interfaces
+
+src=198.168.1.1
+dst=198.168.1.2
+interface=enp1s0
+filter="ip src host $src and ip dst host $dst and port 5432"
+when_start=-k # -k: start capturing immediately
+when_stop="-c 10" # stop after c packets
+out="-w filename" # to file
+out="-w -" # to screen
+sudo wireshark -i $interface -f "$filter" $when_start $when_stop $out

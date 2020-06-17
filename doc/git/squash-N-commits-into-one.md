@@ -19,4 +19,7 @@ N=2
 BR=br/name
 
 git rebase --interactive origin/$BR~$N $BR
+#git rebase --interactive origin/9bfffffffa $BR
+#git rebase -i 01j99999
+#git rebase --continue
 git push origin +$BR

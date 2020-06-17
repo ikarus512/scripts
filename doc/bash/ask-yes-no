@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -x -e
+
+verbosity=2
+if [ $verbosity -ge 2 ]; then echo "### Running $0 in folder $PWD (args: $*)"; fi
+timeout=10
+read -t $timeout -r    -p "Enter username: " user
+read -t $timeout -r -s -p "Enter password: " pass; echo
+
+read -r -p "Are you sure? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    echo "    Yes was chosen."
+fi

@@ -22,8 +22,12 @@
 #       my @lines = <>;
 #       my $file_content = join("", @lines);
 #   7) use perl command line option -0 ($_ will contain the whole STDIN)
-
-
+#
+#
+#  8) for f in $(ls *.h); do
+#         cat $f | perl -e "my @lines = <>;my \$fi=join(\"\", @lines); if(\$fi =~ m/public BaseClass/){print \"1: $f\\n\";}else{print \"0: $f\\n\";}"; done
+#
+#
 # Example to clamp function arguments into one line
 clear
 
