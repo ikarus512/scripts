@@ -1,0 +1,55 @@
+#!/usr/bin/env perl
+
+if (@ARGV[0] eq "GMT") {
+    use POSIX qw(tzset);
+    $ENV{TZ} = 'Europe/London';
+    #$ENV{TZ} = 'Europe/Moscow';
+    #$ENV{TZ} = 'Europe/Amsterdam';
+    tzset;
+    #print gmtime(time)." ";
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+    #printf("%04d%02d%02d_%02d%02d%02d\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+    printf("%04d-%02d-%02d %02d:%02d:%02d GMT\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+} elsif (@ARGV[0] eq "AMS") {
+    use POSIX qw(tzset);
+    $ENV{TZ} = 'Europe/London';
+    #$ENV{TZ} = 'Europe/Moscow';
+    #$ENV{TZ} = 'Europe/Amsterdam';
+    tzset;
+    #print gmtime(time)." ";
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+    #printf("%04d%02d%02d_%02d%02d%02d\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+    $hour = $hour + 2;
+   #printf("%04d-%02d-%02d %02d:%02d:%02d\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+    printf("%04d%02d%02d_%02d%02d%02d\n",     $year+1900,$mon+1,$mday,$hour,$min,$sec);
+} elsif (@ARGV[0] eq "T") {
+    use POSIX qw(tzset);
+    $ENV{TZ} = 'Europe/London';
+    #$ENV{TZ} = 'Europe/Moscow';
+    #$ENV{TZ} = 'Europe/Amsterdam';
+    tzset;
+    #print gmtime(time)." ";
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+    #printf("%04d%02d%02d_%02d%02d%02d\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+    printf("%02d:%02d\n", $hour+2,$min);
+} else {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+    printf("%04d%02d%02d_%02d%02d%02d\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+}
+
+#use POSIX qw(strftime);
+#my $now_string;
+#$now_string = strftime "%a %b %e %H:%M:%S %Y", localtime;
+#print $now_string."\n";
+#$now_string = strftime "%a %b %e %H:%M:%S %Y", gmtime;
+#print $now_string."\n";
+
+#bash:
+#  date
+#  TZ=Europe/Moscow date
+
+#my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+#printf("%04d%02d%02d_%02d%02d%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+
+
+

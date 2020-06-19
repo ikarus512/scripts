@@ -1,0 +1,96 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Time::Local qw(timegm timegm_nocheck); # timelocal gmtime https://perldoc.perl.org/5.8.8/Time/Local.html
+
+printf localtimestamp();
+
+
+#use POSIX qw(tzset);
+#$ENV{TZ} = 'Europe/Moscow';
+#tzset;
+#print localtime;
+
+#use POSIX qw(strftime);
+#my $now_string = strftime "%a %b %e %H:%M:%S %Y", localtime;
+#my $now_string = strftime "%a %b %e %H:%M:%S %Y", gmtime;
+
+#bash:
+#  date
+#  TZ=Europe/Moscow date
+
+#my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+#printf("%04d%02d%02d_%02d%02d%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# print STDERR "time=\n";
+# print STDERR "01) " . time . "\n";
+# print STDERR "02) " . gmtime(time) . "\n";
+# # print STDERR "03) " . localtime(time) . "\n";
+# print STDERR "    gmtimestamp   =" . gmtimestamp()    . "\n";
+# # print STDERR "    localtimestamp=" . localtimestamp() . "\n";
+# my $datetime = gmdatetime(); #"2020-01-01 01:01:01"
+# print STDERR "datetime=\n";
+# print STDERR "1) " . $datetime . "\n";
+# print STDERR "2) " . toUnixEpochTime($datetime) . "\n";
+# print STDERR "21:" . gmtime(toUnixEpochTime($datetime)) . "\n";
+# print STDERR "\n";
+# print STDERR "3) " . toDateTime(toUnixEpochTime($datetime)) . "\n";
+# print STDERR "4) " . toUnixEpochTime(toDateTime(toUnixEpochTime($datetime))) . "\n";
+# print STDERR "5) " . toDateTime(toUnixEpochTime(toDateTime(toUnixEpochTime($datetime)))) . "\n";
+
+
+# toUnixEpochTime() # https://en.wikipedia.org/wiki/Unix_time
+#   Arguments:
+#       $time in format "YYYY-MM-DD HH:mm:ss"
+#   Returns:
+#       the number of seconds between 1970-Jan-1 and $time
+sub toUnixEpochTime {
+    my ($sec,$min,$hour,$mday,$mon,$year) = reverse(split(" |-|:", $_[0]));
+    # print STDERR "    toUnixEpochTime $_[0] --> " . join(" ", ($sec,$min,$hour,$mday,$mon,$year)) . "\n";
+    return timegm($sec,$min,$hour,$mday,$mon-1,$year);
+}
+
+# toDateTime() # https://en.wikipedia.org/wiki/Unix_time
+#   Arguments:
+#       $sec, unix Epoch time (number of seconds since 1970-Jan-01)
+#   Returns:
+#       $time in format "YYYY-MM-DD HH:mm:ss"
+sub toDateTime {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime($_[0]);
+    my $result = sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+    # print STDERR "    toDateTime($_[0]) --> $result\n";
+    return $result;
+}
+
+sub localtimestamp {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+    return sprintf("%04d%02d%02d_%02d%02d%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+}
+
+sub gmtimestamp {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+    return sprintf("%04d%02d%02d_%02d%02d%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+}
+
+sub localdatetime {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+}
+
+sub gmdatetime {
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+    return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+}

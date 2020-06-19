@@ -1,0 +1,28 @@
+#!/usr/bin/env perl
+
+# 1:
+my ($sec1,$min1,$hour1,$mday1,$mon1,$year1) = (0,0,0,0,1,1900);
+my $previousTimestamp = $ARGV[0];
+if ($previousTimestamp =~ m/^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})$/) { ($sec1,$min1,$hour1,$mday1,$mon1,$year1) = ($6, $5, $4, $3, $2, $1); }
+
+# 2:
+my ($sec2,$min2,$hour2,$mday2,$mon2,$year2,$wday2,$yday2,$isdst2) = localtime(time); #printf("%04d%02d%02d_%02d%02d%02d\n", $year+1900,$mon+1,$mday,$hour,$min,$sec);
+($sec2,$min2,$hour2,$mday2,$mon2,$year2) = ($sec2,$min2,$hour2,$mday2,$mon2+1,$year2+1900);
+  #($sec1,$min1,$hour1,$mday1,$mon1,$year1) = (12,12,12,12,12,2012);
+  #($sec2,$min2,$hour2,$mday2,$mon2,$year2) = (11,11,11,11,11,2013);
+  #print "($sec1,$min1,$hour1,$mday1,$mon1,$year1)\n";
+  #print "($sec2,$min2,$hour2,$mday2,$mon2,$year2)\n";
+
+# diff:
+my ($sec,$min,$hour,$mday,$mon,$year) = ($sec2-$sec1,$min2-$min1,$hour2-$hour1,$mday2-$mday1,$mon2-$mon1,$year2-$year1);
+  #print "($sec,$min,$hour,$mday,$mon,$year)\n";
+if ($sec < 0) { $sec = $sec + 60; $min = $min - 1; }
+if ($min < 0) { $min = $min + 60; $hour= $hour- 1; }
+if ($hour< 0) { $hour= $hour+ 24; $mday= $mday- 1; }
+my %days = ( 0=>31, 1=>31, 2=>30, 3=>31, 4=>30, 5=>31, 6=>30, 7=>31, 8=>31, 9=>30, 10=>31, 11=>30, 12=>31, 13=>31 );
+if ($mday< 0) { $mday= $mday+ $days{$mon2-1}; $mon = $mon - 1; } # +30 or +31 or +28 depends on $mon2
+if ($mon < 0) { $mon = $mon + 12; $year= $year- 1; }
+#print "($sec,$min,$hour,$mday,$mon,$year)\n";
+
+printf("%04d%02d%02d_%02d%02d%02d\n", $year,$mon,$mday,$hour,$min,$sec);
+  #print "\$days[$mon2-1]=" . $days{$mon2-1} . "\n";
