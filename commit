@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
 if [ ! -z "$*" ];then msg="$*"
-else msg="scripts added: audio/volume-norm"
+else msg="doc added"
 fi
+git add . && git commit -m "$msg" && git push
+exit
+
 
 
 # pull-n-merge
@@ -24,4 +27,4 @@ git commit -m "$msg"
 # git push origin master
 git push
 
-#git add . && git commit -m "cron" && git push
+#

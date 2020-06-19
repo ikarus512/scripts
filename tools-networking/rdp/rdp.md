@@ -7,3 +7,4 @@
 #./Install-xrdp-2.2.sh -g yes
 
 sudo apt install -y xrdp
+sudo systemctl enable xrdp
