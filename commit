@@ -3,6 +3,7 @@
 if [ ! -z "$*" ];then msg="$*"
 else msg="doc added"
 fi
+#git config user.name ikarus512; git config user.email "ikarus512"; git config core.editor mcedit
 git add . && git commit -m "$msg" && git push
 exit
 
