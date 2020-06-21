@@ -3,29 +3,5 @@
 if [ ! -z "$*" ];then msg="$*"
 else msg="doc added"
 fi
-#git config user.name ikarus512; git config user.email "ikarus512"; git config core.editor mcedit
+git config user.name ikarus512 && git config user.email ikarus512@yandex.ru && git config core.editor mcedit
 git add . && git commit -m "$msg" && git push
-exit
-
-
-
-# pull-n-merge
-#git fetch origin && git merge --no-edit -m "[ci skip] merge with branch master"
-git fetch && git pull
-
-echo ########################### git status
-git status
-echo ########################### git diff
-git diff
-echo ########################### git add
-
-# add all changed files
-git add -A
-
-# commit
-git commit -m "$msg"
-
-# git push origin master
-git push
-
-#
