@@ -19,15 +19,15 @@ umount=yesn ##
 
 
 if [ $mount == yes ];then       i=0; for m in "${MS[@]}"; do let i=i+1
-    echo "== mount $i: $m"
+    echo "== mount $i: $m" >>$logf 2>&1
     mkdir -p /mnt/local_share$i
     mount -t cifs  -o user=$user "$m" /mnt/local_share$i
 done; fi
 
 if [ $ls == yes ];then     i=0; for m in "${MS[@]}"; do let i=i+1
-    echo "== ls $i: $m"
+    echo "== ls $i: $m" >>$logf 2>&1
     cd /home/e/w
-    find . -name "*" -exec echo "$m/{}" \;   >$logf 2>&1
+    find . -name "*" -exec echo "$m/{}" \;   >>$logf 2>&1
 
     ## Print 1st level folders:
     #cat $logf | grep -oP "$m/\./[^/]+" | sort -u  ### output lines:   //fileserver1/data/./folder1
@@ -35,6 +35,6 @@ if [ $ls == yes ];then     i=0; for m in "${MS[@]}"; do let i=i+1
 done; fi
 
 if [ $umount == yes ];then    i=0; for m in "${MS[@]}"; do let i=i+1
-    echo "== umount $i: $m"
+    echo "== umount $i: $m" >>$logf 2>&1
     umount "$m" #"$(echo $m | perl -pe 's/( | \&)/\\$1/g;')"
 done; fi
