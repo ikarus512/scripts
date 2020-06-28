@@ -1,0 +1,5 @@
+# Keep only:
+#configFile.js
+#web2pdf-https
+#web2pdf-https-config.js
+20*

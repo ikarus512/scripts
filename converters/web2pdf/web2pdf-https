@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+
+# ./web2pdf-https https://confluence.company.com/display/PROJNAME
+rm -fr 2*
+
+t=$(timestamp)
+logf=$t.log
+function echo1() { echo "$*" 2>&1 | tee -a $logf; }
+
+if [ "$(which phantomjs)" == "" ];then
+    echo1 "### 1) install node.js, phantomjs (ubuntu 18)"
+    sudo apt install -y curl npm nodejs fontconfig #freetype
+    sudo npm install -g phantomjs-prebuilt --unsafe-perm
+    # sudo npm uninstall -g phantomjs-prebuilt
+    # echo === Here is where phantomjs files and temp files located (for uninstalling):
+    # ds="/usr/local/share /usr/lib/node_modules /tmp /usr/bin /usr/local/bin"
+    # for d in $ds; do if [ -d $d ]; then d1=$(ls $d | grep phantomjs); if [ ! -z $d1 ]; then
+    #     echo $d/$d1
+    #     # rm -fr $d/$d1
+    # fi; fi; done
+    echo1 "Installed phantomjs --version: $(phantomjs --version)"
+    exit
+fi
+
+listd=$t.list
+pdfd=$t.pdf
+mkdir -p $listd $pdfd
+
+echo1 "### 2) login to first page, download it, find links to subpages"
+timeout=10
+
+if [ 0 = 1 ]; then
+    if [[ -f $t.u.log ]] && [[ -f $t.p.log ]]; then
+        user="$(cat $t.u.log)"; pass="$(cat $t.u.log)"
+    else
+        read -t $timeout -r    -p "Confluence username: " user
+        read -t $timeout -r -s -p "Confluence password: " pass; echo
+        echo $user >$t.u.log; echo $pass >$t.p.log
+    fi
+else
+    # TODO: remove                                                           #
+    user=user
+    # TODO: remove                                                           #
+    pass=pass
+    # TODO: remove                                                           #
+fi
+
+
+### https://gist.github.com/dannguyen/03a10e850656577cfb57
+# page="https://www.tonymacx86.com/resources/unibeast-9-3-0-mojave.449"
+# page=https://gist.github.com/dannguyen
+j=$1; page=$2 #"https://confluence.company.com/display/PROJNAME"
+if [ -z "$2" ]; then j=0; page=$1; fi
+
+baseurl=$(echo $page | perl -pe 's#(https?://[^/]+)/.*#$1#;')
+basepath=$(echo $page | perl -pe 's#(https?://[^/]+)(/.*)#$2#;')
+#echo  baseurl=$(echo $page | perl -pe 's#(https?://[^/]+)(/.*)#$1#;')
+#echo basepath=$(echo $page | perl -pe 's#(https?://[^/]+)(/.*)#$2#;')
+
+cooFile=./$t.cookies.txt
+fo=$listd/${basepath//*\//}
+function str4 () { printf "%04d\n" $1; }
+
+### 2.1) Login and extract "login cookie" name/value/domain
+#if [ ! -f $cooFile ];then    curl -L -XGET --output $fo --cookie-jar $cooFile --user $user:$pass -- "$page"; fi
+if [ ! -f $cooFile ];then    curl -L -XGET --output $fo --cookie-jar $cooFile --user $user       -- "$page"; fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 2.2) get page as html
+#curl -L -XGET --output $fo --cookie $cooFile -- "$page"
+### in chrome, save network resource as cURL, add -L --output $fo -- "$page"
+# curl \
+#     -H 'Connection: keep-alive' \
+#     -H 'Sec-Fetch-Mode: navigate' \
+#     -H 'If-Modified-Since: Sun, 26 Jan 2020 14:52:28 GMT' \
+#     ...
+#     --compressed -L --output $fo -- "$page"
+
+### 2.3) get the page as pdf
+cooFmt1=$(cat $cooFile | perl -ne 'if (m/#HttpOnly_?([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\t]+)\t([^\s]+)\s*$/) { print "{\"domain\":\"$1\",\"httponly\":\"$2\",\"path\":\"$3\",\"secure\":\"$4\",\"expires\":\"$5\",\"name\":\"$6\",\"value\":\"$7\"}"; }')
+cooFmt2=
+# echo cooFmt1=$cooFmt1
+./web2pdf-https-config.js $page $pdfd/$(str4 $j).${basepath//\//--}.pdf $cooFmt1
+
+# cooFmt1=0
+# cooFmt2="item1=...; item2=..."
+# ./web2pdf-https-config.js $page $(str4 0).pdf $cooFmt1 "$cooFmt2"
+
+# # cooFmt1=
+# # cooFmt2=
+# ./web2pdf-https-config.js $page $(str4 0).pdf
+
+### 2.4) parse the page and extract subpage urls
+#urls=$(grep -oE "href=\"$page[^\?\"]+" $fo | grep -oE "$page[^\?\"]+")
+urls=$(grep -oE "href=\"?$basepath[^\?\"]+" $fo | grep -oE "$basepath[^\?\"]+")
+
+# let i=0
+# for f1 in NIC2 SU2 General Git;do let i=$i+1
+#     ./web2pdf-https-config.js $page/$f1 $i.$f1.pdf
+# done
+
+let i=$j
+for u in $urls;do let i=$i+1
+    pname=${u//*\//}
+    if [ ! -f $listd/$pname.htm ]; then
+        # echo >$listd/$pname.htm
+        echo $pname
+        ./web2pdf-https $i $baseurl$u
+        # ./web2pdf-https-config.js $baseurl$u $(str4 $i).${u//*\//}.pdf $cooFmt1
+    fi
+done
