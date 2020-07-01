@@ -1,4 +1,6 @@
-#!/usr/bin/java --source 11
+#!/usr/bin/env -S java --source 11 --more-arguments
+// #!/usr/bin/java --class-path /home/imaskar/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar --source 11
+// version can be <11, but install 11+:  sudo apt install -y openjdk-11.jdk openjdk-11.jre
 
 public class hi {
       public static void main(String[] args) { 
