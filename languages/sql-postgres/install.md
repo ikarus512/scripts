@@ -20,6 +20,9 @@ Or
     #sudo -u postgres psql -c "create user sal with encrypted password 'sal';" # probably not needed
     sudo -u postgres psql -c "grant all privileges on database sal to sal;"
     sudo systemctl restart postgresql
+    (or     /etc/init.d/postgresql restart
+     or     su postgres pg_ctl stop; su postgres pg_ctl start
+     or?    pg_ctl stop -U user -P pass  )
 
 ### Remember passwords in .pgpass (to not bother typing them for each psql command)
     echo "127.0.0.1:5432:*:postgres:postgres" >> ~/.pgpass
