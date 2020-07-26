@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+mkdir -p 1
+f=filename.mp3
+title="Title"
+artist="Artist"
+album="Album"
+ffmpeg -i $f -map_metadata -1 -metadata title="$title" -metadata artist="$artist" -metadata album="$album" 1/$f
