@@ -1,0 +1,1 @@
+g++ -dM -E -x c++ - < /dev/null > default_macros.$(uname)

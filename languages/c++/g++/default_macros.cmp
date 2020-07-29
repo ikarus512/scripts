@@ -1,0 +1,18 @@
+Cygwin g++:
+  #define __CYGWIN__ 1
+
+Linux g++:
+  #define __linux 1
+  #define __linux__ 1
+  #define __gnu_linux__ 1
+  #define linux 1
+  #define __unix__ 1
+  #define __unix 1
+  #define unix 1
+
+Windows cl, icl:
+  ??
+
+mingw?
+mac?
+clang?

@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/vs.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/pgsql.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<pre style="white-space: pre-wrap;"><code class="pgsql">
+
+CREATE TABLE calltraces (
+  calltrace_id serial NOT NULL,
+  start_time timestamp without time zone,
+  end_time timestamp without time zone,
+  incomplete boolean NOT NULL DEFAULT false,
+  categories integer[],
+  location character varying(50),
+  tracelogids character varying[],
+  reset_tracelogids character varying[],
+  sourceaddresses character varying[],
+  nurses boolean[],
+  cache_np timestamp,
+  cache_accepted timestamp,
+  cache_cat_changed timestamp,
+  CONSTRAINT calltraces_pkey PRIMARY KEY (calltrace_id)
+);
+
+CREATE INDEX calltraces_start_time_idx ON calltraces USING btree (start_time);
+
+
+</code></pre>

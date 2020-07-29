@@ -1,0 +1,16 @@
+<pre style='color:#000000;background:#ffffff;'><span style='color:#696969; '>-- Run log parser locally.</span>
+<span style='color:#696969; '>-- The function helps to avoid erroneous double processing of logentries table rows</span>
+<span style='color:#696969; '>-- in case when several falcons use the same SAL DB and simultaneously run log parser.</span>
+<span style='color:#800000; font-weight:bold; '>CREATE</span> <span style='color:#800000; font-weight:bold; '>OR</span> <span style='color:#800000; font-weight:bold; '>REPLACE</span> <span style='color:#800000; font-weight:bold; '>FUNCTION</span> sal<span style='color:#808030; '>.</span>parser_run_local<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span> <span style='color:#800000; font-weight:bold; '>RETURNS</span> <span style='color:#800000; font-weight:bold; '>integer</span> <span style='color:#800000; font-weight:bold; '>AS</span> $<span style='color:#800000; font-weight:bold; '>BODY</span>$
+<span style='color:#800000; font-weight:bold; '>DECLARE</span>
+  new_entry_id <span style='color:#800000; font-weight:bold; '>integer</span><span style='color:#808030; '>;</span>
+<span style='color:#800000; font-weight:bold; '>BEGIN</span>
+  <span style='color:#800000; font-weight:bold; '>IF</span> inet_client_addr<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span> <span style='color:#808030; '>=</span> inet_server_addr<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span> <span style='color:#800000; font-weight:bold; '>THEN</span>
+    <span style='color:#800000; font-weight:bold; '>SELECT</span> <span style='color:#800000; font-weight:bold; '>INTO</span> new_entry_id <span style='color:#800000; font-weight:bold; '>FROM</span> sal<span style='color:#808030; '>.</span>parser_run<span style='color:#808030; '>(</span><span style='color:#808030; '>)</span><span style='color:#808030; '>;</span>
+  <span style='color:#800000; font-weight:bold; '>END IF</span><span style='color:#808030; '>;</span>
+  <span style='color:#800000; font-weight:bold; '>RETURN</span> new_entry_id<span style='color:#808030; '>;</span>
+<span style='color:#800000; font-weight:bold; '>END</span><span style='color:#808030; '>;</span>
+$<span style='color:#800000; font-weight:bold; '>BODY</span>$
+<span style='color:#800000; font-weight:bold; '>LANGUAGE</span> plpgsql VOLATILE <span style='color:#800000; font-weight:bold; '>COST</span> <span style='color:#008c00; '>100</span><span style='color:#808030; '>;</span>
+</pre>
+<!--Created using ToHtml.com on 2019-11-14 12:18:36 UTC -->
