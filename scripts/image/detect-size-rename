@@ -1,9 +1,21 @@
 
 for d in $(ls); do if [ -d $d ]; then pushd $d >/dev/null
 
+    tf=000.tmp
+    ls -1 *\ * > $tf
+    while IFS= read -r line
+    do
+        fi=$(echo "$line" | perl -pe 's/ /\\ /g;')
+        fo=$(echo "$line" | perl -pe 's/[ \(\)]/-/g;')
+        echo rename "$line" $fo
+        mv "$line" $fo
+    done < "$tf"
+    rm $tf
+
+
     fs1=$(ls *.* | grep -ivP ".*\.jpe?g")
 
-    if [ 0 == 1 ]; then
+    if [ 1 == 1 ]; then
     fs=$(ls *.jpg)
     for f in $fs; do
         suff=$(identify -format "-%wx%h" $f)
