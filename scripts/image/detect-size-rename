@@ -1,20 +1,25 @@
 
-fs1=$(ls *.* | grep -ivP ".*\.jpg")
+for d in $(ls); do if [ -d $d ]; then pushd $d >/dev/null
 
+    fs1=$(ls *.* | grep -ivP ".*\.jpe?g")
 
-fs=$(ls *.jpg)
-for f in $fs; do
-    suff=$(identify -format "-%wx%h" $f)
-    if [ ! -z "$suff" ]; then
-        extension="${f##*.}"
-        name="${f%%.$extension}"
-        if [[ ! $name =~ $suff ]]; then
-            cmd="mv $f $name$suff.$extension"
-            echo $cmd
-            $cmd
+    if [ 0 == 1 ]; then
+    fs=$(ls *.jpg)
+    for f in $fs; do
+        suff=$(identify -format "-%wx%h" $f)
+        if [ ! -z "$suff" ]; then
+            extension="${f##*.}"
+            name="${f%%.$extension}"
+            extension=jpg
+            if [[ ! $name =~ $suff ]]; then
+                cmd="mv $f $name$suff.$extension"
+                echo $cmd
+                $cmd
+            fi
         fi
+    done
     fi
-done
 
-echo "------------"
-echo fs1=$fs1
+    echo "----- d=$d: $fs1"
+
+popd >/dev/null;fi;done
