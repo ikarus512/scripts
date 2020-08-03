@@ -1,0 +1,17 @@
+
+fs1=$(ls *.* | grep -ivP ".*\.jpg"); echo fs1=$fs1; echo "------------"
+
+
+fs=$(ls *.jpg)
+for f in $fs; do
+    suff=$(identify -format "-%wx%h" $f)
+    if [ ! -z "$suff" ]; then
+        extension="${f##*.}"
+        name="${f%%.$extension}"
+        if [[ ! $name =~ $suff ]]; then
+            cmd="mv $f $name$suff.$extension"
+            echo $cmd
+            $cmd
+        fi
+    fi
+done
