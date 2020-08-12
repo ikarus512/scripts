@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+for f in $(ls p*.png); do
+    echo "--- convert $f to c$f..."
+    mogrify -unsharp 0.25x0.25+8+0.065 -resize 800x -normalize -density 180 *.png  # resize sharp
+done

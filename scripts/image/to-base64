@@ -3,7 +3,13 @@
 ff=1.htm
 echo "Creating $ff..."
 echo >$ff
-for f in $(ls *.gif); do
+
+for f in $(ls p*.png); do
+    echo "--- convert $f to c$f..."
+    mogrify -unsharp 0.25x0.25+8+0.065 -resize 800x -normalize -density 180 *.png  # resize sharp
+done
+
+for f in $(ls c*.png); do
 
 node -e "
 var fs = require('fs');
@@ -27,7 +33,7 @@ function base64_decode(base64str, file) {
 
 // convert image to base64 encoded string
 var base64str = base64_encode(\"$f\");
-console.log('<img src=\"data:image/png;base64, ' + base64str + '\" alt=\"$f\" /><br/>');
+console.log('<img src=\"data:image/png;base64,' + base64str + '\" alt=\"$f\" /><br/>');
 // convert base64 string back to image 
 //base64_decode(base64str, 'copy.jpg');
 " >>$ff
