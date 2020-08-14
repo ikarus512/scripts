@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 
 ###mingw-get install msys-make; exit
-mingw-get install expect
+export PATH=$PATH:/mingw64/bin
+export PATH=$PATH:/c/Apps/mingw/bin     # cp mingw32-make.exe make.exe
+#mingw-get install msys-make tcl expect; exit
+#mingw-get install autoconf automake libtool uname; exit
+
 
 #https://www.tcl.tk/software/tcltk/download.html
 #tar -xvzf tcl8.6.10-src.tar
-pushd tcl8.6.10/unix >/dev/null
-#./configure
-#make  ###cmake --build
-popd >/dev/null
-exit
+#pushd tcl8.6.10/win >/dev/null
+#mkdir -p /p/dist && ./configure --prefix=/p/dist && make && make install   ### default prefix was: /usr/local
+#popd >/dev/null
 
-
-
-
-tk8.6.10-src.tar.gz
-
+#tk8.6.10-src.tar.gz
 
 #https://sourceforge.net/projects/expect/
 #tar -xvzf expect5.45.3.tar.gz
-cd expect5.45.3
-./configure
+pushd expect5.45.3
+#--build= --host=i586mingw32msvc --target=   --host=i386-pc-linux
+#cp /c/Apps/mingw/share/automake-1.11/config.guess .
+mkdir -p /p/dist && ./configure --build=win --prefix=/p/dist && make && make install
+popd
