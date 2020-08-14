@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+###mingw-get install msys-make; exit
+mingw-get install expect
+
+#https://www.tcl.tk/software/tcltk/download.html
+#tar -xvzf tcl8.6.10-src.tar
+pushd tcl8.6.10/unix >/dev/null
+#./configure
+#make  ###cmake --build
+popd >/dev/null
+exit
+
+
+
+
+tk8.6.10-src.tar.gz
+
+
+#https://sourceforge.net/projects/expect/
+#tar -xvzf expect5.45.3.tar.gz
+cd expect5.45.3
+./configure
