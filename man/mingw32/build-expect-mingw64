@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
+
+
+
 #https://sourceforge.net/projects/ezwinports/files/   wget, make, ...
 #choco install make ## (Chocolatey) When it finishes, it is installed and available in Git for Bash / MinGW.
 #cmake --build .
+#./configure --build i686-pc-linux-gnu --host i586-mingw32msvc
+
 
 
 
@@ -11,6 +16,13 @@ export PATH=$PATH:/mingw64/bin
 export PATH=$PATH:/c/Apps/mingw/bin     # cp mingw32-make.exe make.exe
 #mingw-get install msys-make tcl expect; exit
 #mingw-get install autoconf automake libtool uname; exit
+#which autoconf; /c/Apps/mingw/share/automake-1.11/config.guess; exit   #x86_64-pc-mingw32
+
+#https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.69/html_node/Specifying-Target-Triplets.html#Specifying%20Names
+# Autoconf-generated configure scripts can make decisions based on a canonical name for the system type, or target triplet, which has the form: ‘cpu-vendor-os’, where os can be ‘system’ or ‘kernel-system’
+#i686-pc-linux-gnu
+
+
 
 
 #https://www.tcl.tk/software/tcltk/download.html
@@ -26,5 +38,7 @@ export PATH=$PATH:/c/Apps/mingw/bin     # cp mingw32-make.exe make.exe
 pushd expect5.45.3
 #--build= --host=i586mingw32msvc --target=   --host=i386-pc-linux
 #cp /c/Apps/mingw/share/automake-1.11/config.guess .
-mkdir -p /p/dist && ./configure --build=win --prefix=/p/dist && make && make install
+v=x86_64-pc-mingw32
+mkdir -p /p/dist && ./configure --build=$v --host=$v --target=$v --prefix=/p/dist && make && make install
+#./configure --build i686-pc-linux-gnu --host i586-mingw32msvc
 popd
