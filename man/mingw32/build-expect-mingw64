@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+#https://sourceforge.net/projects/ezwinports/files/   wget, make, ...
+#choco install make ## (Chocolatey) When it finishes, it is installed and available in Git for Bash / MinGW.
+#cmake --build .
+
+
+
 ###mingw-get install msys-make; exit
 export PATH=$PATH:/mingw64/bin
 export PATH=$PATH:/c/Apps/mingw/bin     # cp mingw32-make.exe make.exe
