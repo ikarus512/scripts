@@ -12,7 +12,7 @@
 
 
 ###mingw-get install msys-make; exit
-export PATH=$PATH:/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
+export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
 #mingw-get install msys-make tcl expect; exit
 #mingw-get install autoconf automake libtool uname; exit
 #which autoconf; /c/Apps/mingw/share/automake-1.11/config.guess; exit   #x86_64-pc-mingw32
