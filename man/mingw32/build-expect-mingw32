@@ -1,26 +1,14 @@
 #!/usr/bin/env bash
 
-
-
-
 #https://sourceforge.net/projects/ezwinports/files/   wget, make, ...
 #choco install make ## (Chocolatey) When it finishes, it is installed and available in Git for Bash / MinGW.
 #cmake --build .
-#./configure --build i686-pc-linux-gnu --host i586-mingw32msvc
-
-
-
-
-###mingw-get install msys-make; exit
-export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
-#mingw-get install msys-make tcl expect; exit
-#mingw-get install autoconf automake libtool uname; exit
-#which autoconf; /c/Apps/mingw/share/automake-1.11/config.guess; exit   #x86_64-pc-mingw32
-
 #https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.69/html_node/Specifying-Target-Triplets.html#Specifying%20Names
 # Autoconf-generated configure scripts can make decisions based on a canonical name for the system type, or target triplet, which has the form: ‘cpu-vendor-os’, where os can be ‘system’ or ‘kernel-system’
-#i686-pc-linux-gnu
 
+
+export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
+#mingw-get install msys-make tcl expect autoconf automake libtool uname; exit
 
 
 
@@ -30,15 +18,14 @@ export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.e
 #mkdir -p /p/dist && ./configure --prefix=/p/dist && make && make install   ### default prefix was: /usr/local
 #popd >/dev/null
 
+
 #tk8.6.10-src.tar.gz
+
 
 #https://sourceforge.net/projects/expect/
 #tar -xvzf expect5.45.3.tar.gz
 pushd expect5.45.3
-#--build= --host=i586mingw32msvc --target=   --host=i386-pc-linux
-#cp /c/Apps/mingw/share/automake-1.11/config.guess .
-v=x86_64-pc-mingw32
-v=x86_64-pc-mingw64
-mkdir -p /p/dist && ./configure --build=$v --host=$v --target=$v --prefix=/p/dist && make && make install
-#./configure --build i686-pc-linux-gnu --host i586-mingw32msvc
+v=$(/c/Apps/mingw/share/automake-1.11/config.guess)  #cp /c/Apps/mingw/share/automake-1.11/config.guess .
+echo v=$v # x86_64-pc-mingw32       # --build=$v --host=$v --target=$v         host: i386-pc-linux|i586mingw32msvc|i686-pc-linux-gnu
+mkdir -p /p/dist && ./configure --host=$v --build=$v --prefix=/p/dist && make && make install
 popd
