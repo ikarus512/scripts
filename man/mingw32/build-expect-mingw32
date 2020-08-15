@@ -7,19 +7,25 @@
 # Autoconf-generated configure scripts can make decisions based on a canonical name for the system type, or target triplet, which has the form: ‘cpu-vendor-os’, where os can be ‘system’ or ‘kernel-system’
 
 
-export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
+#export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
+export PATH=$PATH:/p/dist/bin:/mingw64/bin:/c/Apps/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
 #mingw-get install msys-make tcl expect autoconf automake libtool uname; exit
 
 
 
 #https://www.tcl.tk/software/tcltk/download.html
 #tar -xvzf tcl8.6.10-src.tar
-#pushd tcl8.6.10/win >/dev/null
-#mkdir -p /p/dist && ./configure --prefix=/p/dist && make && make install   ### default prefix was: /usr/local
-#popd >/dev/null
-
+pushd tcl8.6.10/win >/dev/null
+mkdir -p /p/dist && ./configure --prefix=/p/dist && make && make install   ### default prefix was: /usr/local
+popd >/dev/null
+exit
 
 #tk8.6.10-src.tar.gz
+tar -xvzf tk8.6.10-src.tar.gz
+pushd tk8.6.10/win >/dev/null
+mkdir -p /p/dist && ./configure --prefix=/p/dist && make && make install   ### default prefix was: /usr/local
+popd >/dev/null
+exit
 
 
 #https://sourceforge.net/projects/expect/
