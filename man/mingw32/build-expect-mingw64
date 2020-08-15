@@ -12,8 +12,7 @@
 
 
 ###mingw-get install msys-make; exit
-export PATH=$PATH:/mingw64/bin
-export PATH=$PATH:/c/Apps/mingw/bin     # cp mingw32-make.exe make.exe
+export PATH=$PATH:/dist/bin:/mingw64/bin:/c/Apps/mingw/bin # cp mingw32-make.exe make.exe
 #mingw-get install msys-make tcl expect; exit
 #mingw-get install autoconf automake libtool uname; exit
 #which autoconf; /c/Apps/mingw/share/automake-1.11/config.guess; exit   #x86_64-pc-mingw32
@@ -39,6 +38,7 @@ pushd expect5.45.3
 #--build= --host=i586mingw32msvc --target=   --host=i386-pc-linux
 #cp /c/Apps/mingw/share/automake-1.11/config.guess .
 v=x86_64-pc-mingw32
+v=x86_64-pc-mingw64
 mkdir -p /p/dist && ./configure --build=$v --host=$v --target=$v --prefix=/p/dist && make && make install
 #./configure --build i686-pc-linux-gnu --host i586-mingw32msvc
 popd
