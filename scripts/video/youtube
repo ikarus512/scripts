@@ -8,6 +8,8 @@
 #  ffmpeg -loop 1 -framerate 2 -i input.png -i audio.m4a -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest -pix_fmt yuv420p output.mkv
 
 mkdir 1 || exit 1
+echo $(timestamp) started >1/1.time.log
 for f in $(ls *.mp4); do
   ffmpeg -i $f -c:v libx264 -preset slow -crf 18 -c:a aac -b:a 192k -pix_fmt yuv420p 1/$f.mkv
+  echo $(timestamp) $f >>1/1.time.log
 done
