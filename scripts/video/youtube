@@ -1,0 +1,13 @@
+# https://trac.ffmpeg.org/wiki/Encode/YouTube
+
+# Re-encode the video and stream copy the audio. The output should be a similar quality as the input and will hopefully be a more manageable size.
+#  ffmpeg -i input.avi -c:v libx264 -preset slow -crf 18 -c:a copy -pix_fmt yuv420p output.mkv
+# Same as above, but also re-encode the audio using AAC instead of stream copying it:
+# ffmpeg -i input.mov -c:v libx264 -preset slow -crf 18 -c:a aac -b:a 192k -pix_fmt yuv420p output.mkv
+# Create a video with a still image (input.png) and an audio file (audio.m4a):
+#  ffmpeg -loop 1 -framerate 2 -i input.png -i audio.m4a -c:v libx264 -preset medium -tune stillimage -crf 18 -c:a copy -shortest -pix_fmt yuv420p output.mkv
+
+mkdir 1 || exit 1
+for f in $(ls *.mp4); do
+  ffmpeg -i $f -c:v libx264 -preset slow -crf 18 -c:a aac -b:a 192k -pix_fmt yuv420p 1/$f.mkv
+done
