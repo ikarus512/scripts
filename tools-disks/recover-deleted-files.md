@@ -1,3 +1,4 @@
+# testdisk, photorec
 1. sudo apt-get install testdisk
 2. Insert pen drive/disk drive from where you want to recover files.
 3. sudo photorec
