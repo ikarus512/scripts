@@ -2,10 +2,14 @@
 if [ "$1" == "" ]; then echo -e "Usage:\n    man2pdf name\n where 'name' is anme of profram to generate manual page for"; exit 1; fi
 pname=$1
 
+cd ~/w/m/scripts/man
 function generate_man_pdf() {
     echo "Generating man $pname.pdf..."
     #ftmp=$(mktemp)&& man -t $pname > $ftmp.ps && ps2pdf $ftmp.ps $pname.pdf
-    man -t $pname | ps2pdf - $pname.pdf
+    man -t $pname > $pname.ps
+    if [ ! -f $pname.ps ]; then return 1; fi
+    ps2pdf $pname.ps $pname.pdf
+    rm -fr $pname.ps
 }
 
 function generate_help_file() {

@@ -6,7 +6,9 @@
 #    scripts pull
 #    scripts diff
 
-clear;clear; cd $HOME/w/m/scripts; echo "##### REPOSITORY: git clone https://github.com/ikarus512/scripts"
+#clear;clear
+cd $HOME/w/m/scripts
+echo "##### REPOSITORY: git clone https://github.com/ikarus512/scripts"
 
 case "$1" in
 commit)
