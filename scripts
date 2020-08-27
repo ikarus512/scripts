@@ -6,13 +6,13 @@
 #    scripts pull
 #    scripts diff
 
-clear;clear; cd $HOME/w/m/scripts; echo "##### REPOSITORY: git clone https://github.com/ikarus512/scripts"; git status; echo
+clear;clear; cd $HOME/w/m/scripts; echo "##### REPOSITORY: git clone https://github.com/ikarus512/scripts"
 
-case "$*" in
+case "$1" in
 commit)
     read -n1 -r -p "Are you surely want to commit/push the changes? [y/N] " response; echo
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        read -r -p "Enter commit message: " msg
+        shift; msg="$*"; if [ -z "$msg" ]; then    read -r -p "Enter commit message: " msg; fi
 
         git config user.name ikarus512 && git config user.email ikarus512@yandex.ru && git config core.editor mcedit
         git pull || exit 1
