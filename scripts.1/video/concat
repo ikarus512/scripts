@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cd 2
+
+for f in $(ls *.mp4); do ffmpeg -i $f -c copy -bsf:v h264_mp4toannexb -f mpegts ts.$f.ts; done
+fs=$(ls ts.*.ts | sort); fs=$(echo $fs | perl -pe 's# #|#g;')
+ffmpeg -i "concat:$fs" -c copy -bsf:a aac_adtstoasc output.mp4

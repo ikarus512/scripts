@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+cd 2
+
+frame_delay=3   # 100/3 = 33 fps,   3/100 = 0.03 sec per frame
+fps=33; let t=$fps*4
+f=$(ls *.png); fs=; for i in $(seq $t); do fs="$fs $f"; done
+convert -delay $frame_delay   -loop 0  $fs  a.gif
+
+ffmpeg -i a.gif -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" 1.mp4
