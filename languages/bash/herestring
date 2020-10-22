@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+read -r -d '' VAR <<-'EOF'
+	abc'asdf"
+	$(dont-execute-this)
+	foo"bar"''
+	EOF
+# Dash is to ignore TABs before lines
+echo ----------
+echo "$VAR" # this will echo variable with new lines intact
+echo ----------
+echo $VAR   # this will echo variable without new lines (changed to space character)
+
+
+VAR=$(cat <<'END_HEREDOC'
+abc'asdf"
+$(dont-execute-this)
+foo"bar"''
+END_HEREDOC
+)
+
+echo ----------
+echo "$VAR" # this will echo variable with new lines intact
+echo ----------
+echo $VAR   # this will echo variable without new lines (changed to space character)
