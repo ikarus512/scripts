@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+i=0; fs=; p=0; ps=
+mkdir 1 2 3
+for f in $(ls *.png); do
+    convert    $f -fill white -stroke white -draw "rectangle 0,416 450,440" -draw "rectangle 0,0 1365,70" 1/$f
+    convert  -extract 1365x427+0+0 1/$f 2/$f
+    #nautilus 1/$f & exit
+
+    fs="$fs 2/$f"
+    let i=$i+1; if [ $i == 5 ]; then echo $i: $fs; convert $fs -append 3/$p.png; ps="$ps 3/$p.png"; let p=$p+1; i=0; fs=; fi
+    echo $i
+done
+echo $ps
+
+#sudo apt install img2pdf
+img2pdf $(ls 3/*.png) -o res.pdf
