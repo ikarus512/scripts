@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Doc: http://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
+
+filename=$(basename -- "$fullfile")
+extension="${filename##*.}"
+filename="${filename%.*}"
