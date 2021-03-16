@@ -8,8 +8,8 @@ cp $f.old $f
 echo "log_destination = 'syslog'" >> $f
 echo "syslog_facility = 'LOCAL5'" >> $f
 echo "syslog_ident = 'postgres'" >> $f
-echo "log_min_messages = DEBUG5" >> $f   #  DEBUG5, DEBUG4, DEBUG3, DEBUG2, DEBUG1, INFO, NOTICE, WARNING, ERROR, LOG, FATAL, and PANIC
-#syslog_sequence_numbers = on
-#syslog_split_messages = on
+echo "log_min_messages = notice" >> $f   #  DEBUG5, DEBUG4, DEBUG3, DEBUG2, DEBUG1, INFO, NOTICE, WARNING, ERROR, LOG, FATAL, and PANIC
+reboot
 
-journalctl -t pgsql -t postgres -f
+# RAISE NOTICE 'private_update_card_id(d=%)', to_json(d));
+journalctl -t pg_ctl -t postgres -p notice -f
