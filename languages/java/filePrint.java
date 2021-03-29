@@ -5,7 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 class Print {
-    private static Path path = Paths.get("C:\\p\\nism-gui-installer\\log1.txt");
+    // git-bash (listen and echo file changes):    tail -f /c/logfile.txt &
+    private static Path path = Paths.get("C:\\logfile.txt");
     private static final String NEW_LINE = System.lineSeparator();
     public static void print(String content) {
         try {
