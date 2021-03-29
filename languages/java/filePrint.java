@@ -10,7 +10,7 @@ class Print {
     private static final String NEW_LINE = System.lineSeparator();
     public static void print(String content) {
         try {
-            Files.write(path, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            Files.write(path, (""+content+NEW_LINE).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch(IOException e) {}
     }
 }
