@@ -7,16 +7,20 @@
 #    scripts diff
 
 #clear;clear
-cd $HOME/w/m/scripts
-echo "##### REPOSITORY: git clone https://github.com/ikarus512/scripts"
+clear;clear; cd $HOME/m/scripts; echo "##### REPOSITORY: git clone https://github.com/ikarus512/scripts"
+
+MY_USER="ikarus512"
+MY_MAIL="ikarus512@yandex.ru"
+if [ -z "$MY_USER" -o -z "$MY_MAIL" ]; then echo "Error! MY_USER or MY_MAIL env var not set"; exit 1; fi
+git config user.email "$MY_MAIL"
+git config user.name "$MY_USER"
+git config core.editor mcedit
 
 case "$1" in
 commit)
     read -n1 -r -p "Are you surely want to commit/push the changes? [y/N] " response; echo
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         shift; msg="$*"; if [ -z "$msg" ]; then    read -r -p "Enter commit message: " msg; fi
-
-        git config user.name ikarus512 && git config user.email ikarus512@yandex.ru && git config core.editor mcedit
         git pull || exit 1
         git add . && git commit -m "$msg" && git push
     else
