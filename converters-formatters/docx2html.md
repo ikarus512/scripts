@@ -1,0 +1,1 @@
+pandoc -t html -o out.html   in.docx
